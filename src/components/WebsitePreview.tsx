@@ -87,7 +87,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
             <p className="text-[var(--background)] text-sm mb-2">
               Explore More
             </p>
-            <h2 className="text-[var(--background)] text-4xl font-bold mb-4">
+            <h2 className="text-[#FFFFFF] text-4xl font-bold mb-4">
               Your Adventure Awaits
             </h2>
             <p className="text-[var(--background)] max-w-2xl mx-auto mb-8">
