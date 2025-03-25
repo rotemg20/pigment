@@ -1,4 +1,3 @@
-
 import { type ClassValue } from "clsx";
 
 export interface ColorPalette {
@@ -202,15 +201,6 @@ function ensureContrastRequirements(palette: ColorPalette): ColorPalette {
     result.accent = adjustBrightness(palette.accent, -20);
   }
   
-  // Ensure secondary has good contrast with backgrounds
-  if (!checkContrast(palette.secondary, palette.background)) {
-    result.secondary = adjustBrightness(palette.secondary, -20);
-  }
-  
-  if (!checkContrast(palette.secondary, palette.secondaryBg)) {
-    result.secondary = adjustBrightness(palette.secondary, -15);
-  }
-  
   return result;
 }
 
@@ -262,13 +252,9 @@ export function validatePalette(palette: ColorPalette): boolean {
   // Check accent contrasts against backgrounds
   const accentOnMainBg = checkContrast(palette.background, palette.accent);
   
-  // Check secondary against other backgrounds
-  const secondaryContrast = checkContrast(palette.secondary, palette.background) &&
-                           checkContrast(palette.secondary, palette.secondaryBg);
-  
   return textOnMainBg && textOnSecondaryBg && 
          primaryOnMainBg && primaryOnSecondaryBg && 
-         accentOnMainBg && secondaryContrast;
+         accentOnMainBg;
 }
 
 // Get contrast ratio between two colors (for UI display)

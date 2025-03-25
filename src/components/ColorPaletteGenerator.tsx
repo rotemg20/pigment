@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,18 +41,14 @@ export default function ColorPaletteGenerator({
     try {
       setIsGenerating(true);
       
-      // Parse the prompt to extract color information
       const baseColor = parseColorPrompt(prompt);
       
-      // Generate a harmonized palette based on the extracted color or a default
       let newPalette: ColorPalette;
       
       if (baseColor) {
         newPalette = generateHarmonizedPalette(baseColor);
       } else {
-        // If no specific color was extracted, create a default palette based on the prompt sentiment
         if (prompt.match(/(professional|corporate|business|formal)/gi)) {
-          // Professional theme
           newPalette = {
             background: "#FFFFFF",
             secondaryBg: "#F8FAFC",
@@ -64,7 +59,6 @@ export default function ColorPaletteGenerator({
             transparent: "#00000000"
           };
         } else if (prompt.match(/(creative|artistic|vibrant|colorful)/gi)) {
-          // Creative theme
           newPalette = {
             background: "#FFFFFF",
             secondaryBg: "#F9FAFB",
@@ -75,7 +69,6 @@ export default function ColorPaletteGenerator({
             transparent: "#00000000"
           };
         } else if (prompt.match(/(calm|peaceful|minimal|simple)/gi)) {
-          // Calm theme
           newPalette = {
             background: "#FFFFFF",
             secondaryBg: "#F7F8F9",
@@ -86,7 +79,6 @@ export default function ColorPaletteGenerator({
             transparent: "#00000000"
           };
         } else {
-          // Default balanced theme
           newPalette = {
             background: "#FFFFFF",
             secondaryBg: "#F5F7FA",
@@ -99,10 +91,8 @@ export default function ColorPaletteGenerator({
         }
       }
       
-      // Apply the new palette and notify the user
       onChange(newPalette);
       
-      // Check if all contrast requirements are met
       if (validatePalette(newPalette)) {
         toast({
           title: "Palette Generated",
@@ -131,7 +121,6 @@ export default function ColorPaletteGenerator({
     onChange(updated);
   };
 
-  // Check contrast for a specific color against backgrounds
   const getContrastStatus = (color: string, background: string) => {
     const ratio = getContrastRatio(color, background);
     const passes = checkContrast(color, background);
@@ -196,15 +185,13 @@ export default function ColorPaletteGenerator({
                   />
                 </div>
                 
-                {/* Only show contrast info for relevant colors */}
-                {name !== 'transparent' && name !== 'background' && (
+                {name !== 'transparent' && name !== 'background' && name !== 'secondaryBg' && (
                   <div className="mt-1 text-xs">
                     <p className="text-muted-foreground mb-1">Contrast with background:</p>
                     {getContrastStatus(color, currentPalette.background)}
                   </div>
                 )}
                 
-                {/* Only show secondary background contrast for text and interactive elements */}
                 {(name === 'text' || name === 'primary' || name === 'accent') && (
                   <div className="mt-1 text-xs">
                     <p className="text-muted-foreground mb-1">Contrast with secondary bg:</p>
