@@ -41,6 +41,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
           </button>
         </section>
 
+        {/* Recreating the second section from scratch */}
         <section className="py-12">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -61,9 +62,12 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
                   buttonText: 'Explore More'
                 },
               ].map((item) => (
-                <div key={item.title} className="bg-[var(--secondaryBg)] p-6 rounded-lg shadow">
-                  <div className="text-[var(--accent)] text-blue-500 mb-4">★</div>
-                  <h3 className="text-[var(--primary)] text-blue-600 font-semibold text-lg mb-2">
+                <div 
+                  key={item.title} 
+                  className="bg-[var(--secondaryBg)] p-6 rounded-lg shadow"
+                >
+                  <div className="text-[var(--accent)] mb-4">★</div>
+                  <h3 className="text-[var(--primary)] font-semibold text-lg mb-2">
                     {item.title}
                   </h3>
                   <p className="text-[var(--text)] text-sm mb-4">
