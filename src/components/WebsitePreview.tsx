@@ -45,7 +45,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {['Customized Packages', 'Guided Tours', 'Hotel Booking'].map((title) => (
-                <div key={title} className="bg-[var(--background)] p-6 rounded-lg shadow">
+                <div key={title} className="bg-[var(--secondaryBg)] p-6 rounded-lg shadow">
                   <div className="text-[var(--accent)] mb-4">★</div>
                   <h3 className="text-[var(--primary)] font-semibold text-lg mb-2">
                     {title}
