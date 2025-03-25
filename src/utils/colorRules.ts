@@ -1,4 +1,3 @@
-
 import { type ClassValue } from "clsx";
 
 export interface ColorPalette {
@@ -150,26 +149,85 @@ function createNeutralDarkColor(baseRgb: { r: number, g: number, b: number }): s
 // Create an accent color that complements the base color
 function createAccentColor(baseColor: string): string {
   const rgb = hexToRgb(baseColor);
-  if (!rgb) return "#3182CE"; // Default accent
+  if (!rgb) return "#467FF7"; // Default to our new accent color
   
-  // Create a complementary or analogous color
-  // This is a simplified approach - could be improved with HSL conversions
+  // Convert RGB to HSL for better color adjustments
+  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
   
-  // Get the dominant channel
-  const max = Math.max(rgb.r, rgb.g, rgb.b);
+  // Create a complementary or harmony color based on HSL
+  // Shift the hue by 180 degrees for complementary, or use other values for analogous or triadic
+  let newHue = (hsl.h + 180) % 360; // Complementary color
   
-  // If red is dominant, create a blue-green accent
-  if (max === rgb.r) {
-    return `#${((1 << 24) + (50 << 16) + (150 << 8) + 220).toString(16).slice(1)}`;
+  // For analogous, uncomment this:
+  // let newHue = (hsl.h + 30) % 360; // 30 degree shift for analogous
+  
+  // Increase saturation for more vivid accent
+  const newSat = Math.min(100, hsl.s + 15);
+  
+  // Adjust lightness - make it brighter than the primary to stand out
+  const newLight = Math.min(Math.max(45, hsl.l + 10), 65);
+  
+  // Convert back to RGB
+  const newRgb = hslToRgb(newHue, newSat, newLight);
+  
+  // Convert to hex and return
+  return rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+}
+
+// Helper function to convert RGB to HSL
+function rgbToHsl(r: number, g: number, b: number): { h: number, s: number, l: number } {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+  
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    
+    h *= 60;
   }
-  // If green is dominant, create a purple accent
-  else if (max === rgb.g) {
-    return `#${((1 << 24) + (180 << 16) + (80 << 8) + 220).toString(16).slice(1)}`;
-  }
-  // If blue is dominant, create an orange-yellow accent
-  else {
-    return `#${((1 << 24) + (240 << 16) + (150 << 8) + 50).toString(16).slice(1)}`;
-  }
+  
+  return { h, s: s * 100, l: l * 100 };
+}
+
+// Helper function to convert HSL to RGB
+function hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: number } {
+  s /= 100;
+  l /= 100;
+  
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = l - c / 2;
+  
+  let r = 0, g = 0, b = 0;
+  
+  if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+  else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+  else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+  else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+  else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+  else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+  
+  return { 
+    r: Math.round((r + m) * 255), 
+    g: Math.round((g + m) * 255), 
+    b: Math.round((b + m) * 255) 
+  };
+}
+
+// Helper function to convert RGB to hex
+function rgbToHex(r: number, g: number, b: number): string {
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
 // Ensure all colors in the palette meet contrast requirements
@@ -274,6 +332,50 @@ export function parseColorPrompt(prompt: string): string | null {
   
   if (!colorMentions || colorMentions.length === 0) {
     return null;
+  }
+  
+  // Enhanced accent color detection - check if user specifically mentions accent colors
+  const accentMention = prompt.match(/(accent|highlight|button|interactive) (color|tone|shade)? (of|as|like|should be) (blue|navy|aqua|turquoise|teal|cyan|azure|indigo|red|maroon|crimson|ruby|scarlet|green|emerald|lime|olive|mint|purple|violet|lavender|lilac|magenta|pink|rose|fuschia|orange|coral|peach|amber|yellow|gold|brown|tan|beige|sienna|black|white|gray|grey|silver)/i);
+  
+  if (accentMention) {
+    // If user specifically requests an accent color, use that
+    const accentColorName = accentMention[4].toLowerCase();
+    const accentColorMap: Record<string, string> = {
+      blue: "#467FF7", // Our new default accent
+      navy: "#3B5998",
+      aqua: "#00D1B2",
+      turquoise: "#0DB4B9",
+      teal: "#20C997",
+      cyan: "#17A2B8",
+      azure: "#0078D7",
+      indigo: "#6610F2",
+      red: "#E53E3E",
+      maroon: "#85182A",
+      crimson: "#DC2626",
+      ruby: "#9B1C1C",
+      scarlet: "#E53E3E",
+      green: "#38A169",
+      emerald: "#059669",
+      lime: "#84CC16",
+      olive: "#3D9970",
+      mint: "#10B981",
+      purple: "#805AD5",
+      violet: "#7C3AED",
+      lavender: "#9F7AEA",
+      lilac: "#A78BFA",
+      magenta: "#D53F8C",
+      pink: "#EC4899",
+      rose: "#F43F5E",
+      fuschia: "#D946EF",
+      orange: "#ED8936",
+      coral: "#F97316",
+      peach: "#FDBA74",
+      amber: "#F59E0B",
+      yellow: "#ECC94B",
+      gold: "#D69E2E"
+    };
+    
+    return accentColorMap[accentColorName] || "#467FF7";
   }
   
   // Expanded color mapping
