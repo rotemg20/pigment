@@ -1,8 +1,10 @@
 
 import { ColorPalette } from '@/utils/colorRules';
+
 interface WebsitePreviewProps {
   palette: ColorPalette;
 }
+
 export default function WebsitePreview({
   palette
 }: WebsitePreviewProps) {
@@ -14,7 +16,9 @@ export default function WebsitePreview({
     '--text': palette.text,
     '--accent': palette.accent
   } as React.CSSProperties;
-  return <div className="border rounded-lg overflow-hidden shadow-lg" style={previewStyles}>
+  
+  return (
+    <div className="border rounded-lg overflow-hidden shadow-lg" style={previewStyles}>
       <div className="bg-[var(--bg-color)] text-[var(--text)] p-4">
         <nav className="flex justify-between items-center">
           <div className="text-lg font-bold text-[var(--primary)]">Logo</div>
@@ -96,5 +100,6 @@ export default function WebsitePreview({
           </div>
         </section>
       </main>
-    </div>;
+    </div>
+  );
 }

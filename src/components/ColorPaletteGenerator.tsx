@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,50 +51,70 @@ export default function ColorPaletteGenerator({
       if (baseColor) {
         newPalette = generateHarmonizedPalette(baseColor);
       } else {
-        // If no specific color was extracted, create a default palette with slight variations
-        newPalette = {
-          background: "#FFFFFF", // Main background always white per requirements
-          secondaryBg: "#F5F7FA", // Light secondary background
-          secondary: "#1A202C", // Dark background for containers
-          primary: "#2C5282", // For headings and important elements
-          text: "#2D3748", // Body text
-          accent: "#3182CE", // Interactive elements
-          transparent: "#00000000" // Required by specs
-        };
+        // If no specific color was extracted, create a default palette based on the prompt sentiment
+        if (prompt.match(/(professional|corporate|business|formal)/gi)) {
+          // Professional theme
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F8FAFC",
+            secondary: "#1E293B", 
+            primary: "#0F172A",
+            text: "#334155",
+            accent: "#2563EB",
+            transparent: "#00000000"
+          };
+        } else if (prompt.match(/(creative|artistic|vibrant|colorful)/gi)) {
+          // Creative theme
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F9FAFB",
+            secondary: "#27272A",
+            primary: "#7C3AED",
+            text: "#3F3F46",
+            accent: "#F59E0B",
+            transparent: "#00000000"
+          };
+        } else if (prompt.match(/(calm|peaceful|minimal|simple)/gi)) {
+          // Calm theme
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F7F8F9",
+            secondary: "#292524",
+            primary: "#4F46E5",
+            text: "#44403C",
+            accent: "#10B981",
+            transparent: "#00000000"
+          };
+        } else {
+          // Default balanced theme
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F5F7FA",
+            secondary: "#1A202C",
+            primary: "#2C5282",
+            text: "#2D3748",
+            accent: "#3182CE",
+            transparent: "#00000000"
+          };
+        }
       }
       
-      // Validate the palette against accessibility rules
-      if (!validatePalette(newPalette)) {
-        toast({
-          title: "Warning",
-          description: "Generated palette has contrast issues. Adjusting for better accessibility.",
-          variant: "default",
-        });
-        
-        // If validation fails, adjust to ensure contrast
-        
-        // First try to darken the text if needed
-        if (!checkContrast(newPalette.background, newPalette.text)) {
-          newPalette.text = "#2D3748"; // Darker text for better contrast
-        }
-        
-        // Make primary color more contrasty if needed
-        if (!checkContrast(newPalette.background, newPalette.primary)) {
-          newPalette.primary = "#2C5282"; // Darker primary for better contrast
-        }
-        
-        // Adjust accent for better contrast
-        if (!checkContrast(newPalette.background, newPalette.accent)) {
-          newPalette.accent = "#3182CE"; // Better contrast accent
-        }
-      }
-      
+      // Apply the new palette and notify the user
       onChange(newPalette);
       
-      toast({
-        title: "Palette Generated",
-        description: "New color palette has been created based on your prompt",
-      });
+      // Check if all contrast requirements are met
+      if (validatePalette(newPalette)) {
+        toast({
+          title: "Palette Generated",
+          description: "New color palette meets all accessibility standards",
+        });
+      } else {
+        toast({
+          title: "Palette Generated with Warnings",
+          description: "Some colors may not meet optimal contrast requirements",
+          variant: "default",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
