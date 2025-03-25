@@ -1,4 +1,3 @@
-
 import { ColorPalette } from '@/utils/colorRules';
 
 interface WebsitePreviewProps {
@@ -84,7 +83,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
 
         <section className="bg-[var(--secondary)] text-center py-16">
           <div className="container mx-auto px-4">
-            <p className="text-[var(--background)] text-sm mb-2">
+            <p className="text-[#FFFFFF] text-sm mb-2">
               Explore More
             </p>
             <h2 className="text-[#FFFFFF] text-4xl font-bold mb-4">
