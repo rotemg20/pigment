@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,9 +8,16 @@ import { ColorPalette, defaultPalette, validatePalette } from '@/utils/colorRule
 import { toast } from "@/hooks/use-toast";
 import { Wand2 } from 'lucide-react';
 
-export default function ColorPaletteGenerator() {
+interface ColorPaletteGeneratorProps {
+  currentPalette: ColorPalette;
+  onChange: (palette: ColorPalette) => void;
+}
+
+export default function ColorPaletteGenerator({ 
+  currentPalette, 
+  onChange 
+}: ColorPaletteGeneratorProps) {
   const [prompt, setPrompt] = useState('');
-  const [currentPalette, setCurrentPalette] = useState<ColorPalette>(defaultPalette);
   
   const generatePalette = async () => {
     if (!prompt.trim()) {
@@ -49,7 +57,7 @@ export default function ColorPaletteGenerator() {
         newPalette.primary = "#0A1232"; // Darker primary for better contrast
       }
       
-      setCurrentPalette(newPalette);
+      onChange(newPalette);
       
       toast({
         title: "Palette Generated",
@@ -65,10 +73,8 @@ export default function ColorPaletteGenerator() {
   };
 
   const handleColorChange = (key: keyof ColorPalette, value: string) => {
-    setCurrentPalette(prev => {
-      const updated = { ...prev, [key]: value };
-      return updated;
-    });
+    const updated = { ...currentPalette, [key]: value };
+    onChange(updated);
   };
 
   return (

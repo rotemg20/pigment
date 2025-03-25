@@ -21,7 +21,10 @@ export default function Index() {
         
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
-            <ColorPaletteGenerator onChange={handlePaletteChange} />
+            <ColorPaletteGenerator 
+              currentPalette={currentPalette} 
+              onChange={handlePaletteChange} 
+            />
           </div>
           <div>
             <h2 className="text-2xl font-semibold mb-4">Live Preview</h2>
