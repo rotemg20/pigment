@@ -41,20 +41,36 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
           </button>
         </section>
 
-        <section className="bg-[var(--secondaryBg)] py-12">
+        <section className="py-12">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {['Customized Packages', 'Guided Tours', 'Hotel Booking'].map((title) => (
-                <div key={title} className="bg-[var(--secondaryBg)] p-6 rounded-lg shadow">
+              {[
+                {
+                  title: 'Customized Packages',
+                  description: 'Create your unique travel experience with our tailored packages. We adjust to your preferences and ensure you enjoy every bit of your journey.',
+                  buttonText: 'Learn More'
+                },
+                {
+                  title: 'Guided Tours',
+                  description: 'Explore scenic locations with our knowledgeable guides. Enjoy a deep dive into the local culture and uncover hidden treasures along the way.',
+                  buttonText: 'Find Out More'
+                },
+                {
+                  title: 'Hotel Booking',
+                  description: 'Book your perfect stay easily with our user-friendly booking system. Choose from various comfortable accommodations tailored to your needs.',
+                  buttonText: 'Explore More'
+                },
+              ].map((item) => (
+                <div key={item.title} className="bg-[var(--secondaryBg)] p-6 rounded-lg shadow">
                   <div className="text-[var(--accent)] mb-4">★</div>
                   <h3 className="text-[var(--primary)] font-semibold text-lg mb-2">
-                    {title}
+                    {item.title}
                   </h3>
                   <p className="text-[var(--text)] text-sm mb-4">
-                    Create your unique travel experience with our tailored services. We adjust to your preferences and ensure you enjoy every bit of your journey.
+                    {item.description}
                   </p>
-                  <button className="text-[var(--accent)] hover:underline text-sm">
-                    Learn More
+                  <button className="border border-[var(--accent)] text-[var(--accent)] px-4 py-1 rounded hover:bg-[var(--accent)] hover:text-white text-sm transition-colors">
+                    {item.buttonText}
                   </button>
                 </div>
               ))}
