@@ -8,6 +8,10 @@ import type { ColorPalette } from "@/utils/colorRules";
 export default function Index() {
   const [currentPalette, setCurrentPalette] = useState<ColorPalette>(defaultPalette);
 
+  const handlePaletteChange = (palette: ColorPalette) => {
+    setCurrentPalette(palette);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -17,7 +21,7 @@ export default function Index() {
         
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
-            <ColorPaletteGenerator />
+            <ColorPaletteGenerator onChange={handlePaletteChange} />
           </div>
           <div>
             <h2 className="text-2xl font-semibold mb-4">Live Preview</h2>

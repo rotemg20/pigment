@@ -1,3 +1,4 @@
+
 import { ColorPalette } from '@/utils/colorRules';
 interface WebsitePreviewProps {
   palette: ColorPalette;
@@ -14,18 +15,18 @@ export default function WebsitePreview({
     '--accent': palette.accent
   } as React.CSSProperties;
   return <div className="border rounded-lg overflow-hidden shadow-lg" style={previewStyles}>
-      <div className="bg-[var(--background)] text-[var(--text)] p-4">
+      <div className="bg-[var(--bg-color)] text-[var(--text)] p-4">
         <nav className="flex justify-between items-center">
-          <div className="text-lg font-bold">Logo</div>
+          <div className="text-lg font-bold text-[var(--primary)]">Logo</div>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-[var(--accent)]">Home</a>
-            <a href="#" className="hover:text-[var(--accent)]">About</a>
-            <a href="#" className="hover:text-[var(--accent)]">Services</a>
+            <a href="#" className="text-[var(--text)] hover:text-[var(--accent)]">Home</a>
+            <a href="#" className="text-[var(--text)] hover:text-[var(--accent)]">About</a>
+            <a href="#" className="text-[var(--text)] hover:text-[var(--accent)]">Services</a>
           </div>
         </nav>
       </div>
       
-      <main className="bg-[var(--background)]">
+      <main className="bg-[var(--bg-color)]">
         <section className="text-center py-12">
           <h1 className="text-[var(--primary)] text-4xl font-bold mb-4">
             Welcome to Our Site
@@ -53,9 +54,11 @@ export default function WebsitePreview({
               title: 'Hotel Booking',
               description: 'Book your perfect stay easily with our user-friendly booking system. Choose from various comfortable accommodations tailored to your needs.',
               buttonText: 'Explore More'
-            }].map(item => <div key={item.title} style={{
-              backgroundColor: 'var(--secondary-bg)'
-            }} className="p-6 rounded-lg shadow">
+            }].map(item => <div key={item.title} 
+              className="p-6 rounded-lg shadow"
+              style={{
+                backgroundColor: 'var(--secondary-bg)'
+              }}>
                   <div className="text-[var(--accent)] mb-4">★</div>
                   <h3 className="text-[var(--primary)] font-semibold text-lg mb-2">
                     {item.title}
@@ -79,14 +82,14 @@ export default function WebsitePreview({
             <h2 className="text-[#FFFFFF] text-4xl font-bold mb-4">
               Your Adventure Awaits
             </h2>
-            <p className="text-[var(--background)] max-w-2xl mx-auto mb-8 text-white">
+            <p className="text-[#FFFFFF] max-w-2xl mx-auto mb-8">
               Discover unique travel packages tailored just for you. Our goal is to connect you with unforgettable experiences, whether it's a beach vacation, a mountain escape, or family adventures. Dive into our offerings and start planning your next journey today!
             </p>
             <div className="flex gap-4 justify-center">
               <button className="bg-[var(--accent)] text-white px-6 py-2 rounded hover:opacity-90">
                 Learn More
               </button>
-              <button className="border border-[var(--background)] text-[var(--background)] px-6 py-2 rounded bg-transparent text-white">
+              <button className="border border-[#FFFFFF] text-[#FFFFFF] px-6 py-2 rounded bg-transparent">
                 Get Started
               </button>
             </div>

@@ -12,13 +12,13 @@ export interface ColorPalette {
 }
 
 export const defaultPalette: ColorPalette = {
-  background: "#FFFFFF",
-  secondaryBg: "#F8F9FA",
-  secondary: "#212529",
-  primary: "#1C244B",
-  text: "#212529",
-  accent: "#0D6EFD",
-  transparent: "#00000000"
+  background: "#FFFFFF",  // Always white per requirements
+  secondaryBg: "#F8F9FA", // Light secondary background
+  secondary: "#212529",   // Dark background for containers
+  primary: "#1C244B",     // For headings and important elements
+  text: "#333333",        // Body text
+  accent: "#0D6EFD",      // Interactive elements
+  transparent: "#00000000" // Required by specs
 };
 
 // Check if a color meets contrast requirements (WCAG AA)
@@ -58,18 +58,27 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } | nul
 
 // Validate a color palette against the rules
 export function validatePalette(palette: ColorPalette): boolean {
-  // Check background contrasts
-  const backgroundChecks = checkContrast(palette.background, palette.text) &&
-                          checkContrast(palette.background, palette.primary) &&
-                          checkContrast(palette.background, palette.accent);
-
-  // Check secondary background contrasts
-  const secondaryBgChecks = checkContrast(palette.secondaryBg, palette.text) &&
-                           checkContrast(palette.secondaryBg, palette.primary);
-
-  // Check secondary contrasts
-  const secondaryChecks = checkContrast(palette.secondary, palette.background) &&
-                         checkContrast(palette.secondary, palette.secondaryBg);
-
-  return backgroundChecks && secondaryBgChecks && secondaryChecks;
+  // Main background should be white
+  if (palette.background !== "#FFFFFF") {
+    return false;
+  }
+  
+  // Check text contrasts against backgrounds
+  const textOnMainBg = checkContrast(palette.background, palette.text);
+  const textOnSecondaryBg = checkContrast(palette.secondaryBg, palette.text);
+  
+  // Check primary contrasts against backgrounds
+  const primaryOnMainBg = checkContrast(palette.background, palette.primary);
+  const primaryOnSecondaryBg = checkContrast(palette.secondaryBg, palette.primary);
+  
+  // Check accent contrasts against backgrounds
+  const accentOnMainBg = checkContrast(palette.background, palette.accent);
+  
+  // Check secondary against other backgrounds
+  const secondaryContrast = checkContrast(palette.secondary, palette.background) &&
+                           checkContrast(palette.secondary, palette.secondaryBg);
+  
+  return textOnMainBg && textOnSecondaryBg && 
+         primaryOnMainBg && primaryOnSecondaryBg && 
+         accentOnMainBg && secondaryContrast;
 }
