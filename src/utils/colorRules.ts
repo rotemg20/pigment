@@ -15,7 +15,7 @@ export const defaultPalette: ColorPalette = {
   background: "#FFFFFF",
   secondaryBg: "#F8F9FA",
   secondary: "#212529",
-  primary: "#0D6EFD",
+  primary: "#1C244B",
   text: "#212529",
   accent: "#0D6EFD",
   transparent: "#00000000"

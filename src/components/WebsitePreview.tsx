@@ -17,7 +17,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-lg" style={previewStyles}>
-      <div className="bg-[var(--secondary)] text-[var(--background)] p-4">
+      <div className="bg-[var(--background)] text-[var(--text)] p-4">
         <nav className="flex justify-between items-center">
           <div className="text-lg font-bold">Logo</div>
           <div className="flex gap-4">
@@ -28,7 +28,7 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
         </nav>
       </div>
       
-      <main className="bg-[var(--background)] p-6">
+      <main className="bg-[var(--background)]">
         <section className="text-center py-12">
           <h1 className="text-[var(--primary)] text-4xl font-bold mb-4">
             Welcome to Our Site
@@ -41,18 +41,47 @@ export default function WebsitePreview({ palette }: WebsitePreviewProps) {
           </button>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-[var(--secondaryBg)] p-6 rounded-lg">
-              <h3 className="text-[var(--primary)] font-semibold mb-2">
-                Feature {i}
-              </h3>
-              <p className="text-[var(--text)] text-sm">
-                This is a sample feature description that showcases how the colors
-                work together in a real context.
-              </p>
+        <section className="bg-[var(--secondaryBg)] py-12">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {['Customized Packages', 'Guided Tours', 'Hotel Booking'].map((title) => (
+                <div key={title} className="bg-[var(--background)] p-6 rounded-lg shadow">
+                  <div className="text-[var(--accent)] mb-4">★</div>
+                  <h3 className="text-[var(--primary)] font-semibold text-lg mb-2">
+                    {title}
+                  </h3>
+                  <p className="text-[var(--text)] text-sm mb-4">
+                    Create your unique travel experience with our tailored services. We adjust to your preferences and ensure you enjoy every bit of your journey.
+                  </p>
+                  <button className="text-[var(--accent)] hover:underline text-sm">
+                    Learn More
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+        </section>
+
+        <section className="bg-[var(--secondary)] text-center py-16">
+          <div className="container mx-auto px-4">
+            <p className="text-[var(--background)] text-sm mb-2">
+              Explore More
+            </p>
+            <h2 className="text-[var(--background)] text-4xl font-bold mb-4">
+              Your Adventure Awaits
+            </h2>
+            <p className="text-[var(--background)] max-w-2xl mx-auto mb-8">
+              Discover unique travel packages tailored just for you. Our goal is to connect you with unforgettable experiences, whether it's a beach vacation, a mountain escape, or family adventures. Dive into our offerings and start planning your next journey today!
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button className="bg-[var(--accent)] text-white px-6 py-2 rounded hover:opacity-90">
+                Learn More
+              </button>
+              <button className="border border-[var(--background)] text-[var(--background)] px-6 py-2 rounded hover:bg-white/10">
+                Get Started
+              </button>
+            </div>
+          </div>
         </section>
       </main>
     </div>
