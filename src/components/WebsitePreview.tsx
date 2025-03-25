@@ -1,5 +1,4 @@
-
-import { ColorPalette } from '@/utils/colorRules';
+import { ColorPalette } from '@/utils/colors';
 
 interface WebsitePreviewProps {
   palette: ColorPalette;

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import {
   parseColorPrompt,
   generateHarmonizedPalette,
   getContrastRatio
-} from '@/utils/colorRules';
+} from '@/utils/colors';
 import { toast } from "@/hooks/use-toast";
 import { Wand2, AlertTriangle, Check, X } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
