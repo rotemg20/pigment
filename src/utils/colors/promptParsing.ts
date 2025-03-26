@@ -151,7 +151,6 @@ export function parseColorPrompt(prompt: string): string | null {
   );
   
   // Store all distinct colors for palette generation
-  // Reset the array first
   allMentionedColors = distinctColorNames.map(name => 
     colorMap[name.toLowerCase()] || "#2B6CB0"
   );
@@ -233,98 +232,270 @@ function parseTheme(prompt: string): string | null {
     {
       name: 'forest',
       pattern: /(forest|woodland|jungle|nature|trees|woods)/gi,
-      primary: '#2D6A4F',  // dark green
+      primary: '#2D6A4F',
       colors: ['#2D6A4F', '#40916C', '#52B788', '#74C69D', '#95D5B2', '#081C15', '#1B4332']
     },
     {
       name: 'ocean',
       pattern: /(ocean|sea|marine|beach|coastal|aquatic|water)/gi,
-      primary: '#1A73E8',  // ocean blue
+      primary: '#1A73E8',
       colors: ['#1A73E8', '#03045E', '#0077B6', '#00B4D8', '#90E0EF', '#CAF0F8', '#023E8A']
     },
     {
       name: 'sunset',
       pattern: /(sunset|dusk|evening|twilight)/gi,
-      primary: '#FF7B00',  // sunset orange
+      primary: '#FF7B00',
       colors: ['#FF7B00', '#FFB703', '#FB8500', '#F48C06', '#E85D04', '#DC2F02', '#6A040F']
     },
     {
       name: 'girly',
       pattern: /(girly|feminine|cute|princess|pink)/gi,
-      primary: '#FF70E5',  // pink
+      primary: '#FF70E5',
       colors: ['#FF70E5', '#FFB3DA', '#FEC5E5', '#FBD3E9', '#FF9CEE', '#F195D3', '#CB6CE6']
     },
     {
       name: 'monochrome',
       pattern: /(monochrome|greyscale|black and white|b&w)/gi,
-      primary: '#333333',  // dark gray
+      primary: '#333333',
       colors: ['#333333', '#4F4F4F', '#828282', '#BDBDBD', '#E0E0E0', '#F2F2F2', '#000000']
     },
     {
       name: 'earthy',
       pattern: /(earthy|earth|soil|clay|terracotta|natural|organic)/gi,
-      primary: '#6B705C',  // earthy green
+      primary: '#6B705C',
       colors: ['#6B705C', '#A5A58D', '#B7B7A4', '#CB997E', '#DDBEA9', '#FFE8D6', '#5F4842']
     },
     {
       name: 'autumn',
       pattern: /(autumn|fall|harvest|leaves)/gi,
-      primary: '#9C6644',  // autumn brown
+      primary: '#9C6644',
       colors: ['#9C6644', '#BC6C25', '#DDA15E', '#FEFAE0', '#FAEDCD', '#D4A373', '#E76F51']
     },
     {
       name: 'winter',
       pattern: /(winter|snow|ice|cold|frost|freezing)/gi,
-      primary: '#CAF0F8',  // winter light blue
+      primary: '#CAF0F8',
       colors: ['#CAF0F8', '#ADE8F4', '#90E0EF', '#48CAE4', '#00B4D8', '#0096C7', '#023E8A']
     },
     {
       name: 'spring',
       pattern: /(spring|bloom|blossom|floral|flower)/gi,
-      primary: '#95D5B2',  // spring green
+      primary: '#95D5B2',
       colors: ['#95D5B2', '#74C69D', '#52B788', '#B5E48C', '#D9ED92', '#FFD166', '#FF99C8']
     },
     {
       name: 'summer',
       pattern: /(summer|sunny|sunshine|hot|warm)/gi,
-      primary: '#FFB703',  // summer yellow
+      primary: '#FFB703',
       colors: ['#FFB703', '#FB8500', '#F48C06', '#FDC500', '#FED9B7', '#00AFB9', '#0081A7']
     },
     {
       name: 'neon',
       pattern: /(neon|glow|glowing|bright|vibrant|electric)/gi,
-      primary: '#39FF14',  // neon green
+      primary: '#39FF14',
       colors: ['#39FF14', '#00FFFF', '#FF00FF', '#FE00FE', '#FF3131', '#FFFF00', '#FF10F0']
     },
     {
       name: 'pastel',
       pattern: /(pastel|soft|gentle|light)/gi,
-      primary: '#FFD1DC',  // pastel pink
+      primary: '#FFD1DC',
       colors: ['#FFD1DC', '#FFCAD4', '#F3ABB6', '#FAE0E4', '#B4F8C8', '#A0E7E5', '#B8C0FF']
     },
     {
       name: 'retro',
       pattern: /(retro|vintage|old-?school|classic|80s|90s)/gi,
-      primary: '#FFB347',  // retro orange
+      primary: '#FFB347',
       colors: ['#FFB347', '#E4572E', '#FFC914', '#FFF689', '#A0E8AF', '#75B9BE', '#5A189A']
     },
     {
       name: 'cyberpunk',
       pattern: /(cyberpunk|cyber|neon|futurist|tech)/gi,
-      primary: '#F706CF',  // cyber pink
+      primary: '#F706CF',
       colors: ['#F706CF', '#903BF7', '#00FFFF', '#14F2E0', '#720AF5', '#3209DB', '#000000']
+    },
+    // New themes below
+    {
+      name: 'hippie',
+      pattern: /(hippie|60s|sixties|psychedelic|tie-?dye|bohemian|boho)/gi,
+      primary: '#FF6B35',
+      colors: ['#FF6B35', '#F7C59F', '#EFEFD0', '#004E89', '#1A659E', '#7AE7C7', '#D64161']
+    },
+    {
+      name: 'tropical',
+      pattern: /(tropical|caribbean|island|hawaii|exotic)/gi,
+      primary: '#FF9A3C',
+      colors: ['#FF9A3C', '#FF5A5F', '#F15BB5', '#00BBF9', '#00F5D4', '#9EF01A', '#FCBF49']
+    },
+    {
+      name: 'minimalist',
+      pattern: /(minimalist|simple|clean|modern|sleek|minimal)/gi,
+      primary: '#2F2F2F',
+      colors: ['#2F2F2F', '#555555', '#E0E0E0', '#FFFFFF', '#AAAAAA', '#CCCCCC', '#999999']
+    },
+    {
+      name: 'gothic',
+      pattern: /(gothic|dark|goth|vampire|horror|spooky|halloween)/gi,
+      primary: '#0C0032',
+      colors: ['#0C0032', '#190061', '#240090', '#3500D3', '#282828', '#400080', '#721121']
+    },
+    {
+      name: 'elegant',
+      pattern: /(elegant|classy|luxury|premium|sophisticated|upscale|fancy)/gi,
+      primary: '#2C3639',
+      colors: ['#2C3639', '#3F4E4F', '#A27B5C', '#DCD7C9', '#090909', '#CD7F32', '#F1F1F1']
+    },
+    {
+      name: 'space',
+      pattern: /(space|galaxy|cosmic|universe|stars|astronaut|astronomy|nebula)/gi,
+      primary: '#2D3047',
+      colors: ['#2D3047', '#419D78', '#E0A458', '#FFDBB5', '#93B7BE', '#093A3E', '#3066BE']
+    },
+    {
+      name: 'western',
+      pattern: /(western|cowboy|desert|ranch|wild west|frontier)/gi,
+      primary: '#A85751',
+      colors: ['#A85751', '#DEA681', '#EFD9B4', '#D6A2AD', '#816271', '#883955', '#E5D1D0']
+    },
+    {
+      name: 'industrial',
+      pattern: /(industrial|factory|machine|metal|steel|iron|mechanical)/gi,
+      primary: '#393E46',
+      colors: ['#393E46', '#222831', '#00ADB5', '#EEEEEE', '#4A6D7C', '#FFD369', '#6E6E6E']
+    },
+    {
+      name: 'scandinavian',
+      pattern: /(scandinavian|nordic|swedish|danish|norway)/gi,
+      primary: '#FFFFFF',
+      colors: ['#FFFFFF', '#E5E9EC', '#D8DEE9', '#4C566A', '#88C0D0', '#5E81AC', '#EBCB8B']
+    },
+    {
+      name: 'japanese',
+      pattern: /(japanese|japan|zen|kimono|sakura|cherry blossom)/gi,
+      primary: '#D9A0A0',
+      colors: ['#D9A0A0', '#9F9F92', '#717C89', '#424C55', '#372C2E', '#BAB4A9', '#FFFFFF']
+    },
+    {
+      name: 'coffee',
+      pattern: /(coffee|espresso|latte|mocha|cafe|brown)/gi,
+      primary: '#6F4E37',
+      colors: ['#6F4E37', '#B87333', '#DAA06D', '#E8D0B9', '#392613', '#FCEEE3', '#2E1503']
+    },
+    {
+      name: 'wine',
+      pattern: /(wine|burgundy|merlot|grape|vineyard)/gi,
+      primary: '#722F37',
+      colors: ['#722F37', '#A63446', '#450920', '#281C2D', '#DEB841', '#3B1F2B', '#8D0033']
+    },
+    {
+      name: 'gaming',
+      pattern: /(gaming|gamer|video games|esports|arcade)/gi,
+      primary: '#121212',
+      colors: ['#121212', '#BB86FC', '#3700B3', '#03DAC5', '#CF6679', '#018786', '#1DE9B6']
+    },
+    {
+      name: 'christmas',
+      pattern: /(christmas|xmas|santa|holiday|festive|winter holiday)/gi,
+      primary: '#D41E1E',
+      colors: ['#D41E1E', '#146B3A', '#F8B229', '#FFFFFF', '#1A3C2E', '#EA4630', '#165B33']
+    },
+    {
+      name: 'halloween',
+      pattern: /(halloween|spooky|scary|pumpkin|october)/gi,
+      primary: '#FF6700',
+      colors: ['#FF6700', '#000000', '#662E9B', '#4D0099', '#EA6363', '#59057B', '#F7F7F7']
+    },
+    {
+      name: 'rainbow',
+      pattern: /(rainbow|multicolor|colorful|spectrum|pride)/gi,
+      primary: '#FF0000',
+      colors: ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
+    },
+    {
+      name: 'watermelon',
+      pattern: /(watermelon|summer fruit|melon)/gi,
+      primary: '#FF6B6B',
+      colors: ['#FF6B6B', '#4ECDC4', '#1A535C', '#41B3A3', '#69DC9E', '#FF595E', '#042A2B']
+    },
+    {
+      name: 'cotton candy',
+      pattern: /(cotton candy|fairy floss|carnival|fun fair)/gi,
+      primary: '#FFB6C1',
+      colors: ['#FFB6C1', '#AEDFF7', '#FFC0CB', '#87CEEB', '#F8C8DC', '#77BFA3', '#E6A4B4']
+    },
+    {
+      name: 'nautical',
+      pattern: /(nautical|sailor|navy|maritime|sailing|boat)/gi,
+      primary: '#003366',
+      colors: ['#003366', '#FFFFFF', '#CC0000', '#FFC72C', '#0066CC', '#D6001C', '#F0F0F0']
     }
   ];
 
-  // Check if any theme matches
+  // Convert the prompt to lowercase for easier matching
+  const lowercasePrompt = prompt.toLowerCase();
+
+  // First, try to find direct matches with the patterns
   for (const theme of themes) {
-    if (prompt.match(theme.pattern)) {
+    if (lowercasePrompt.match(theme.pattern)) {
       // Store theme colors for palette generation
       allMentionedColors = [...theme.colors];
       return theme.primary;
     }
   }
 
+  // If no direct match, try to detect themes based on context or similar words
+  // This handles cases like "hippie color's 60's" or other variations
+  const contextualThemeMap = [
+    { keywords: ['hippy', 'hipster', 'hippies', '60', 'psychedelic', 'tie dye'], theme: 'hippie' },
+    { keywords: ['sea', 'blue', 'water', 'wave', 'deep', 'aqua'], theme: 'ocean' },
+    { keywords: ['tree', 'green', 'leaf', 'plant', 'nature'], theme: 'forest' },
+    { keywords: ['girl', 'feminine', 'woman', 'lady', 'princess'], theme: 'girly' },
+    { keywords: ['sun', 'dawn', 'dusk', 'horizon', 'orange sky'], theme: 'sunset' },
+    { keywords: ['dirt', 'mud', 'ground', 'natural', 'organic'], theme: 'earthy' },
+    { keywords: ['tech', 'futuristic', 'sci-fi', 'neon', 'digital'], theme: 'cyberpunk' },
+    { keywords: ['vintage', 'old', 'classic', 'retro', 'nostalgia'], theme: 'retro' },
+    { keywords: ['light', 'soft', 'pastel', 'gentle', 'baby'], theme: 'pastel' },
+    { keywords: ['bright', 'glow', 'vibrant', 'intense', 'flashy'], theme: 'neon' }
+  ];
+
+  for (const contextMap of contextualThemeMap) {
+    for (const keyword of contextMap.keywords) {
+      if (lowercasePrompt.includes(keyword)) {
+        // Find the matching theme
+        const matchedTheme = themes.find(t => t.name === contextMap.theme);
+        if (matchedTheme) {
+          allMentionedColors = [...matchedTheme.colors];
+          return matchedTheme.primary;
+        }
+      }
+    }
+  }
+
+  // If still no match found, check for descriptive phrases
+  if (
+    lowercasePrompt.includes('like the beach') || 
+    lowercasePrompt.includes('like the sea') || 
+    lowercasePrompt.includes('blue water')
+  ) {
+    const oceanTheme = themes.find(t => t.name === 'ocean');
+    if (oceanTheme) {
+      allMentionedColors = [...oceanTheme.colors];
+      return oceanTheme.primary;
+    }
+  }
+
+  if (
+    lowercasePrompt.includes('like a forest') || 
+    lowercasePrompt.includes('green nature') || 
+    lowercasePrompt.includes('trees and')
+  ) {
+    const forestTheme = themes.find(t => t.name === 'forest');
+    if (forestTheme) {
+      allMentionedColors = [...forestTheme.colors];
+      return forestTheme.primary;
+    }
+  }
+
+  // No theme match found
   return null;
 }
 

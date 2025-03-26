@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,23 +45,28 @@ export default function ColorPaletteGenerator({
     try {
       setIsGenerating(true);
       
+      // Always attempt to generate a palette from any input
       const baseColor = parseColorPrompt(prompt);
-      
       let newPalette: ColorPalette;
       let toastMessage = "";
       
       if (baseColor) {
         setUsedPrompt(prompt);
         
+        // Check for specific palette types
         const hexMatch = prompt.match(/#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g);
         if (hexMatch) {
           toastMessage = "Generated palette based on hex color: " + hexMatch[0];
         }
         
+        // List of themes to check for in the prompt
         const themeWords = [
           'forest', 'ocean', 'sunset', 'girly', 'monochrome', 'earthy', 
           'autumn', 'winter', 'spring', 'summer', 'neon', 'pastel', 
-          'retro', 'cyberpunk'
+          'retro', 'cyberpunk', 'hippie', '60s', 'tropical', 'minimalist',
+          'gothic', 'elegant', 'space', 'western', 'industrial', 'scandinavian',
+          'japanese', 'coffee', 'wine', 'gaming', 'christmas', 'halloween',
+          'rainbow', 'watermelon', 'cotton candy', 'nautical'
         ];
         
         const detectedTheme = themeWords.find(theme => 
@@ -69,11 +75,18 @@ export default function ColorPaletteGenerator({
         
         if (detectedTheme) {
           toastMessage = `Generated "${detectedTheme}" themed palette`;
+        } else {
+          // If no specific theme was detected in the keywords
+          // but we still got a baseColor, create a generic message
+          toastMessage = "Generated custom palette";
         }
         
         newPalette = generateHarmonizedPalette(baseColor, prompt);
       } else {
-        newPalette = palette;
+        // If no colors or themes detected, use fallback palette
+        // but still try to generate something from the prompt
+        toastMessage = "Using default palette with custom adjustments";
+        newPalette = generateHarmonizedPalette(palette.primary, prompt);
       }
       
       onChange(newPalette);
@@ -138,7 +151,7 @@ export default function ColorPaletteGenerator({
           <div className="flex gap-2">
             <Input
               id="prompt"
-              placeholder="e.g., forest themed, #FF70E5, girly theme, sunset colors..."
+              placeholder="e.g., hippie 60's, forest themed, #FF70E5, sunset colors..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
