@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -122,7 +123,7 @@ export default function ColorPaletteGenerator({
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate palette",
+        description: `Failed to generate palette: ${(error as Error).message}`,
         variant: "destructive",
       });
       console.error("Palette generation error:", error);
@@ -261,6 +262,10 @@ export default function ColorPaletteGenerator({
               <p className="text-sm text-purple-700">
                 AI mode uses OpenAI's GPT-4 model to generate unique color palettes based on your prompt. 
                 Try descriptive prompts like "autumn forest", "cyberpunk night", or "coastal beach".
+              </p>
+              <p className="text-sm text-purple-700 mt-1">
+                <strong>Note:</strong> If the API quota is exceeded, the app will automatically fall back 
+                to the built-in algorithm.
               </p>
             </div>
           </div>

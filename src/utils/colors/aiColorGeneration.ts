@@ -1,6 +1,8 @@
 
 import { ColorPalette, defaultPalette } from './types';
 import { toast } from "@/hooks/use-toast";
+import { generateHarmonizedPalette, parseColorPrompt } from './colorGeneration';
+import { validatePalette } from './colorValidation';
 
 // Your OpenAI API key (consider moving this to an environment variable for production)
 const OPENAI_API_KEY = "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";
@@ -83,9 +85,8 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
 
 // Fallback function that mimics AI generation but uses our existing logic
 export function simulateAIColorPalette(prompt: string, currentPalette: ColorPalette): ColorPalette {
-  // Import dynamically to avoid circular dependencies
-  const { generateHarmonizedPalette, parseColorPrompt } = require('./colorGeneration');
-  const { validatePalette } = require('./colorValidation');
+  // Instead of using require, directly import the functions we need
+  // This is already done at the top of the file
   
   const baseColor = parseColorPrompt(prompt) || currentPalette.primary;
   let generatedPalette = generateHarmonizedPalette(baseColor, prompt);
