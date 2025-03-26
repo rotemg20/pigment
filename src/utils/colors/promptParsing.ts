@@ -1,6 +1,9 @@
 
 import { hexToRgb, adjustBrightness, rgbToHex, rgbToHsl, hslToRgb } from './colorConversion';
 
+// Create a global variable to store mentioned colors
+export let allMentionedColors: string[] = [];
+
 // Parse an input prompt to extract color information
 export function parseColorPrompt(prompt: string): string | null {
   // Enhanced color detection
@@ -123,7 +126,8 @@ export function parseColorPrompt(prompt: string): string | null {
   );
   
   // Store all distinct colors for palette generation
-  export const allMentionedColors = distinctColorNames.map(name => 
+  // Reset the array first
+  allMentionedColors = distinctColorNames.map(name => 
     colorMap[name.toLowerCase()] || "#2B6CB0"
   );
   
@@ -197,13 +201,10 @@ export function parseColorPrompt(prompt: string): string | null {
   return hexColor;
 }
 
-// Export additional color information from the prompt
-export const allMentionedColors: string[] = [];
-
 // Get all unique colors mentioned in the prompt
 export function getAdditionalColors(prompt: string): string[] {
   // Reset the global array first
-  allMentionedColors.length = 0;
+  allMentionedColors = [];
   
   // Call parseColorPrompt to populate allMentionedColors
   parseColorPrompt(prompt);
