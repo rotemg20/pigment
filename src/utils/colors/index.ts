@@ -13,3 +13,6 @@ export * from './colorGeneration';
 
 // Export prompt parsing functions
 export * from './promptParsing';
+
+// Export AI color generation functions
+export * from './aiColorGeneration';
