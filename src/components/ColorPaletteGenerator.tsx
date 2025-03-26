@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +32,7 @@ export default function ColorPaletteGenerator({
   const [isGenerating, setIsGenerating] = useState(false);
   const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
   const [useAI, setUseAI] = useState(true);  // Set AI mode to true by default
+  const [aiAvailable, setAiAvailable] = useState(true); // Track if AI mode is available
   
   const palette = currentPalette || defaultPalette;
   
@@ -51,18 +52,27 @@ export default function ColorPaletteGenerator({
       
       let newPalette: ColorPalette;
       let toastMessage = "";
+      let usedAI = false;
       
-      if (useAI) {
+      if (useAI && aiAvailable) {
         // Try to generate using AI
         const aiPalette = await generateAIColorPalette(prompt);
         
         if (aiPalette) {
           newPalette = aiPalette;
           toastMessage = "Generated AI palette based on your prompt";
+          usedAI = true;
         } else {
-          // Fall back to our algorithm if AI fails
+          // If AI generation fails, fall back to our algorithm
+          setAiAvailable(false); // Disable AI for future attempts in this session
           newPalette = simulateAIColorPalette(prompt, palette);
-          toastMessage = "AI generation failed, using built-in algorithm instead";
+          toastMessage = "AI generation unavailable, using built-in algorithm instead";
+          
+          toast({
+            title: "AI Mode Disabled",
+            description: "OpenAI API quota exceeded. Using built-in algorithm for this session.",
+            variant: "default",
+          });
         }
       } else {
         // Use our existing algorithm
@@ -170,10 +180,11 @@ export default function ColorPaletteGenerator({
               <Label htmlFor="ai-mode" className="text-sm">AI Mode</Label>
               <Switch 
                 id="ai-mode" 
-                checked={useAI} 
-                onCheckedChange={setUseAI} 
+                checked={useAI && aiAvailable} 
+                onCheckedChange={setUseAI}
+                disabled={!aiAvailable}
               />
-              <Sparkles className="h-4 w-4 text-purple-500" />
+              <Sparkles className={`h-4 w-4 ${aiAvailable ? 'text-purple-500' : 'text-gray-400'}`} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -184,7 +195,7 @@ export default function ColorPaletteGenerator({
               onChange={(e) => setPrompt(e.target.value)}
             />
             <Button onClick={generatePalette} disabled={isGenerating}>
-              {useAI ? (
+              {useAI && aiAvailable ? (
                 <Sparkles className="mr-2 h-4 w-4" />
               ) : (
                 <Wand2 className="mr-2 h-4 w-4" />
@@ -196,7 +207,7 @@ export default function ColorPaletteGenerator({
             <div className="mt-2 flex items-center text-sm text-muted-foreground">
               <Info className="h-3.5 w-3.5 mr-1" />
               <span>Generated from: "{usedPrompt}"</span>
-              {useAI && <Badge variant="outline" className="ml-2 bg-purple-50 text-purple-800 border-purple-200">AI-Enhanced</Badge>}
+              {useAI && aiAvailable && <Badge variant="outline" className="ml-2 bg-purple-50 text-purple-800 border-purple-200">AI-Enhanced</Badge>}
             </div>
           )}
         </div>
@@ -255,18 +266,23 @@ export default function ColorPaletteGenerator({
         )}
         
         {useAI && (
-          <div className="bg-purple-50 border border-purple-200 rounded-md p-3 mt-4 flex items-start gap-2">
-            <Info className="h-5 w-5 text-purple-500 mt-0.5" />
+          <div className={`${aiAvailable ? 'bg-purple-50 border-purple-200' : 'bg-gray-50 border-gray-200'} border rounded-md p-3 mt-4 flex items-start gap-2`}>
+            <Info className={`h-5 w-5 ${aiAvailable ? 'text-purple-500' : 'text-gray-500'} mt-0.5`} />
             <div>
-              <h4 className="font-semibold text-purple-800">AI Mode Enabled</h4>
-              <p className="text-sm text-purple-700">
-                AI mode uses OpenAI's GPT-4 model to generate unique color palettes based on your prompt. 
-                Try descriptive prompts like "autumn forest", "cyberpunk night", or "coastal beach".
+              <h4 className={`font-semibold ${aiAvailable ? 'text-purple-800' : 'text-gray-800'}`}>
+                {aiAvailable ? 'AI Mode Enabled' : 'AI Mode Unavailable'}
+              </h4>
+              <p className={`text-sm ${aiAvailable ? 'text-purple-700' : 'text-gray-700'}`}>
+                {aiAvailable 
+                  ? 'AI mode uses OpenAI\'s GPT-4 model to generate unique color palettes based on your prompt. Try descriptive prompts like "autumn forest", "cyberpunk night", or "coastal beach".'
+                  : 'The OpenAI API quota has been exceeded. The app is using the built-in algorithm for palette generation instead.'}
               </p>
-              <p className="text-sm text-purple-700 mt-1">
-                <strong>Note:</strong> If the API quota is exceeded, the app will automatically fall back 
-                to the built-in algorithm.
-              </p>
+              {aiAvailable && (
+                <p className="text-sm text-purple-700 mt-1">
+                  <strong>Note:</strong> If the API quota is exceeded, the app will automatically fall back 
+                  to the built-in algorithm.
+                </p>
+              )}
             </div>
           </div>
         )}

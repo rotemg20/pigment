@@ -8,8 +8,17 @@ import { parseColorPrompt } from './promptParsing';
 // Your OpenAI API key (consider moving this to an environment variable for production)
 const OPENAI_API_KEY = "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";
 
+// Flag to track if we've hit the API quota limit
+let apiQuotaExceeded = false;
+
 // Function to generate a color palette using AI
 export async function generateAIColorPalette(prompt: string): Promise<ColorPalette | null> {
+  // If we already know the API quota is exceeded, don't attempt to call the API
+  if (apiQuotaExceeded) {
+    console.log("Skipping API call - quota already known to be exceeded");
+    return null;
+  }
+  
   try {
     // Format the prompt to get better results
     const enhancedPrompt = `Generate a web color palette with these colors: background (always white), secondaryBg (light shade), secondary (dark shade), primary (main color), text (readable on white), accent (vibrant color), and transparent. Based on this theme: "${prompt}". Return only a JSON object with hex color codes.`;
@@ -40,6 +49,13 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
     if (!response.ok) {
       const errorData = await response.json();
       console.error('API error:', errorData);
+      
+      // Check if this is a quota error
+      if (errorData.error?.code === "insufficient_quota") {
+        apiQuotaExceeded = true;
+        console.log("API quota exceeded, will use fallback for future requests");
+      }
+      
       throw new Error(`Failed to generate AI color palette: ${response.status} ${response.statusText}`);
     }
 
@@ -75,20 +91,12 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
     return paletteObject as ColorPalette;
   } catch (error) {
     console.error('AI palette generation error:', error);
-    toast({
-      title: "AI Error",
-      description: `Failed to generate palette: ${(error as Error).message}`,
-      variant: "destructive",
-    });
     return null;
   }
 }
 
-// Fallback function that mimics AI generation but uses our existing logic
+// Fallback function that uses our existing logic
 export function simulateAIColorPalette(prompt: string, currentPalette: ColorPalette): ColorPalette {
-  // Instead of using require, directly import the functions we need
-  // This is already done at the top of the file
-  
   const baseColor = parseColorPrompt(prompt) || currentPalette.primary;
   let generatedPalette = generateHarmonizedPalette(baseColor, prompt);
   
