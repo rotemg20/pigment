@@ -1,11 +1,12 @@
 
 import { ColorPalette, defaultPalette } from './types';
 import { toast } from "@/hooks/use-toast";
-import { generateHarmonizedPalette, parseColorPrompt } from './colorGeneration';
+import { generateHarmonizedPalette } from './colorGeneration';
 import { validatePalette } from './colorValidation';
+import { parseColorPrompt } from './promptParsing';
 
 // Your OpenAI API key (consider moving this to an environment variable for production)
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 
 // Function to generate a color palette using AI
 export async function generateAIColorPalette(prompt: string): Promise<ColorPalette | null> {
