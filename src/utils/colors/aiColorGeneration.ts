@@ -72,7 +72,19 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
       throw new Error('Could not extract JSON from AI response');
     }
 
-    const paletteObject = JSON.parse(jsonMatch[0]);
+    // Parse the JSON and handle both nested and flat structures
+    const parsedJson = JSON.parse(jsonMatch[0]);
+    
+    // Check if the response has a nested ColorPalette object or is a flat color object
+    let paletteObject: ColorPalette;
+    
+    if (parsedJson.ColorPalette) {
+      // Handle nested structure
+      paletteObject = parsedJson.ColorPalette;
+    } else {
+      // Handle flat structure
+      paletteObject = parsedJson;
+    }
     
     // Ensure all required colors are present
     const requiredColors = ['background', 'secondaryBg', 'secondary', 'primary', 'text', 'accent', 'transparent'];
