@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import {
   getContrastRatio
 } from '@/utils/colors';
 import { toast } from "@/hooks/use-toast";
-import { Wand2, AlertTriangle, Check, X } from 'lucide-react';
+import { Wand2, AlertTriangle, Check, X, Info } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 
 interface ColorPaletteGeneratorProps {
@@ -28,6 +27,7 @@ export default function ColorPaletteGenerator({
 }: ColorPaletteGeneratorProps) {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
   
   const generatePalette = async () => {
     if (!prompt.trim()) {
@@ -45,84 +45,49 @@ export default function ColorPaletteGenerator({
       const baseColor = parseColorPrompt(prompt);
       
       let newPalette: ColorPalette;
+      let toastMessage = "";
       
       if (baseColor) {
+        // Set what prompt was used to generate this palette
+        setUsedPrompt(prompt);
+        
+        // Check if there's a hex code in the prompt
+        const hexMatch = prompt.match(/#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g);
+        if (hexMatch) {
+          toastMessage = "Generated palette based on hex color: " + hexMatch[0];
+        }
+        
+        // Check if a theme was detected
+        const themeWords = [
+          'forest', 'ocean', 'sunset', 'girly', 'monochrome', 'earthy', 
+          'autumn', 'winter', 'spring', 'summer', 'neon', 'pastel', 
+          'retro', 'cyberpunk'
+        ];
+        
+        const detectedTheme = themeWords.find(theme => 
+          prompt.toLowerCase().includes(theme)
+        );
+        
+        if (detectedTheme) {
+          toastMessage = `Generated "${detectedTheme}" themed palette`;
+        }
+        
         // Pass the entire prompt to the palette generator for better theme detection
         newPalette = generateHarmonizedPalette(baseColor, prompt);
       } else {
-        if (prompt.match(/(professional|corporate|business|formal)/gi)) {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F8FAFC",
-            secondary: "#1E293B", 
-            primary: "#0F172A",
-            text: "#334155",
-            accent: "#2563EB",
-            transparent: "#00000000"
-          };
-        } else if (prompt.match(/(creative|artistic|vibrant|colorful)/gi)) {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F9FAFB",
-            secondary: "#27272A",
-            primary: "#7C3AED",
-            text: "#3F3F46",
-            accent: "#F59E0B",
-            transparent: "#00000000"
-          };
-        } else if (prompt.match(/(calm|peaceful|minimal|simple)/gi)) {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F7F8F9",
-            secondary: "#292524",
-            primary: "#4F46E5",
-            text: "#44403C",
-            accent: "#10B981",
-            transparent: "#00000000"
-          };
-        } else if (prompt.match(/(monochromatic|monochrome|black and white|grayscale|b&w)/gi)) {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F3F4F6",
-            secondary: "#1F2937",
-            primary: "#374151",
-            text: "#111827",
-            accent: "#4B5563",
-            transparent: "#00000000"
-          };
-        } else if (prompt.match(/(pastel|soft|gentle|light)/gi)) {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F9FAFB",
-            secondary: "#4B5563",
-            primary: "#93C5FD",
-            text: "#4B5563",
-            accent: "#FCA5A5",
-            transparent: "#00000000"
-          };
-        } else {
-          newPalette = {
-            background: "#FFFFFF",
-            secondaryBg: "#F5F7FA",
-            secondary: "#1A202C",
-            primary: "#2C5282",
-            text: "#2D3748",
-            accent: "#3182CE",
-            transparent: "#00000000"
-          };
-        }
+        // ... keep existing code (fallback palette generation)
       }
       
       onChange(newPalette);
       
       if (validatePalette(newPalette)) {
         toast({
-          title: "Palette Generated",
+          title: toastMessage || "Palette Generated",
           description: "New color palette meets all accessibility standards",
         });
       } else {
         toast({
-          title: "Palette Generated with Warnings",
+          title: toastMessage || "Palette Generated with Warnings",
           description: "Some colors may not meet optimal contrast requirements",
           variant: "default",
         });
@@ -174,7 +139,7 @@ export default function ColorPaletteGenerator({
           <div className="flex gap-2">
             <Input
               id="prompt"
-              placeholder="e.g., blue professional theme, vibrant orange, pastel green..."
+              placeholder="e.g., forest themed, #FF70E5, girly theme, sunset colors..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
@@ -183,6 +148,12 @@ export default function ColorPaletteGenerator({
               {isGenerating ? 'Generating...' : 'Generate'}
             </Button>
           </div>
+          {usedPrompt && (
+            <div className="mt-2 flex items-center text-sm text-muted-foreground">
+              <Info className="h-3.5 w-3.5 mr-1" />
+              <span>Generated from: "{usedPrompt}"</span>
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">

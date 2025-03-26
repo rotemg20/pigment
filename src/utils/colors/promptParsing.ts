@@ -6,6 +6,31 @@ export let allMentionedColors: string[] = [];
 
 // Parse an input prompt to extract color information
 export function parseColorPrompt(prompt: string): string | null {
+  // Check if the user provided a specific hex code
+  const hexMatch = prompt.match(/#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g);
+  if (hexMatch) {
+    // Use the first hex code mentioned as the primary color
+    const hexColor = hexMatch[0];
+    
+    // Store all hex codes for palette generation
+    allMentionedColors = hexMatch.map(hex => {
+      // Normalize 3-digit hex to 6-digit if needed
+      if (hex.length === 4) {
+        const r = hex[1], g = hex[2], b = hex[3];
+        return `#${r}${r}${g}${g}${b}${b}`;
+      }
+      return hex;
+    });
+    
+    return hexColor;
+  }
+  
+  // Check for themed color palettes
+  const themeMatch = parseTheme(prompt);
+  if (themeMatch) {
+    return themeMatch;
+  }
+  
   // Enhanced color detection
   const colorMentions = prompt.match(/(blue|navy|aqua|turquoise|teal|cyan|azure|indigo|red|maroon|crimson|ruby|scarlet|green|emerald|lime|olive|mint|purple|violet|lavender|lilac|magenta|pink|rose|fuschia|orange|coral|peach|amber|yellow|gold|brown|tan|beige|sienna|black|white|gray|grey|silver|dark|light|bright|pastel|vibrant|muted|cool|warm)/gi);
   
@@ -199,6 +224,108 @@ export function parseColorPrompt(prompt: string): string | null {
   }
   
   return hexColor;
+}
+
+// Helper function to detect and process themed color palettes
+function parseTheme(prompt: string): string | null {
+  // Theme patterns to recognize
+  const themes = [
+    {
+      name: 'forest',
+      pattern: /(forest|woodland|jungle|nature|trees|woods)/gi,
+      primary: '#2D6A4F',  // dark green
+      colors: ['#2D6A4F', '#40916C', '#52B788', '#74C69D', '#95D5B2', '#081C15', '#1B4332']
+    },
+    {
+      name: 'ocean',
+      pattern: /(ocean|sea|marine|beach|coastal|aquatic|water)/gi,
+      primary: '#1A73E8',  // ocean blue
+      colors: ['#1A73E8', '#03045E', '#0077B6', '#00B4D8', '#90E0EF', '#CAF0F8', '#023E8A']
+    },
+    {
+      name: 'sunset',
+      pattern: /(sunset|dusk|evening|twilight)/gi,
+      primary: '#FF7B00',  // sunset orange
+      colors: ['#FF7B00', '#FFB703', '#FB8500', '#F48C06', '#E85D04', '#DC2F02', '#6A040F']
+    },
+    {
+      name: 'girly',
+      pattern: /(girly|feminine|cute|princess|pink)/gi,
+      primary: '#FF70E5',  // pink
+      colors: ['#FF70E5', '#FFB3DA', '#FEC5E5', '#FBD3E9', '#FF9CEE', '#F195D3', '#CB6CE6']
+    },
+    {
+      name: 'monochrome',
+      pattern: /(monochrome|greyscale|black and white|b&w)/gi,
+      primary: '#333333',  // dark gray
+      colors: ['#333333', '#4F4F4F', '#828282', '#BDBDBD', '#E0E0E0', '#F2F2F2', '#000000']
+    },
+    {
+      name: 'earthy',
+      pattern: /(earthy|earth|soil|clay|terracotta|natural|organic)/gi,
+      primary: '#6B705C',  // earthy green
+      colors: ['#6B705C', '#A5A58D', '#B7B7A4', '#CB997E', '#DDBEA9', '#FFE8D6', '#5F4842']
+    },
+    {
+      name: 'autumn',
+      pattern: /(autumn|fall|harvest|leaves)/gi,
+      primary: '#9C6644',  // autumn brown
+      colors: ['#9C6644', '#BC6C25', '#DDA15E', '#FEFAE0', '#FAEDCD', '#D4A373', '#E76F51']
+    },
+    {
+      name: 'winter',
+      pattern: /(winter|snow|ice|cold|frost|freezing)/gi,
+      primary: '#CAF0F8',  // winter light blue
+      colors: ['#CAF0F8', '#ADE8F4', '#90E0EF', '#48CAE4', '#00B4D8', '#0096C7', '#023E8A']
+    },
+    {
+      name: 'spring',
+      pattern: /(spring|bloom|blossom|floral|flower)/gi,
+      primary: '#95D5B2',  // spring green
+      colors: ['#95D5B2', '#74C69D', '#52B788', '#B5E48C', '#D9ED92', '#FFD166', '#FF99C8']
+    },
+    {
+      name: 'summer',
+      pattern: /(summer|sunny|sunshine|hot|warm)/gi,
+      primary: '#FFB703',  // summer yellow
+      colors: ['#FFB703', '#FB8500', '#F48C06', '#FDC500', '#FED9B7', '#00AFB9', '#0081A7']
+    },
+    {
+      name: 'neon',
+      pattern: /(neon|glow|glowing|bright|vibrant|electric)/gi,
+      primary: '#39FF14',  // neon green
+      colors: ['#39FF14', '#00FFFF', '#FF00FF', '#FE00FE', '#FF3131', '#FFFF00', '#FF10F0']
+    },
+    {
+      name: 'pastel',
+      pattern: /(pastel|soft|gentle|light)/gi,
+      primary: '#FFD1DC',  // pastel pink
+      colors: ['#FFD1DC', '#FFCAD4', '#F3ABB6', '#FAE0E4', '#B4F8C8', '#A0E7E5', '#B8C0FF']
+    },
+    {
+      name: 'retro',
+      pattern: /(retro|vintage|old-?school|classic|80s|90s)/gi,
+      primary: '#FFB347',  // retro orange
+      colors: ['#FFB347', '#E4572E', '#FFC914', '#FFF689', '#A0E8AF', '#75B9BE', '#5A189A']
+    },
+    {
+      name: 'cyberpunk',
+      pattern: /(cyberpunk|cyber|neon|futurist|tech)/gi,
+      primary: '#F706CF',  // cyber pink
+      colors: ['#F706CF', '#903BF7', '#00FFFF', '#14F2E0', '#720AF5', '#3209DB', '#000000']
+    }
+  ];
+
+  // Check if any theme matches
+  for (const theme of themes) {
+    if (prompt.match(theme.pattern)) {
+      // Store theme colors for palette generation
+      allMentionedColors = [...theme.colors];
+      return theme.primary;
+    }
+  }
+
+  return null;
 }
 
 // Get all unique colors mentioned in the prompt
