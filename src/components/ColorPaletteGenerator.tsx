@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,7 @@ export default function ColorPaletteGenerator({
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
-  const [useAI, setUseAI] = useState(false);
+  const [useAI, setUseAI] = useState(true);  // Set AI mode to true by default
   
   const palette = currentPalette || defaultPalette;
   
@@ -260,8 +259,8 @@ export default function ColorPaletteGenerator({
             <div>
               <h4 className="font-semibold text-purple-800">AI Mode Enabled</h4>
               <p className="text-sm text-purple-700">
-                AI mode uses advanced algorithms to generate unique color palettes based on your prompt. 
-                Results may vary and depend on the OpenAI API availability.
+                AI mode uses OpenAI's GPT-4 model to generate unique color palettes based on your prompt. 
+                Try descriptive prompts like "autumn forest", "cyberpunk night", or "coastal beach".
               </p>
             </div>
           </div>

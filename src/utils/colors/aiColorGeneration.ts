@@ -2,6 +2,9 @@
 import { ColorPalette, defaultPalette } from './types';
 import { toast } from "@/hooks/use-toast";
 
+// Your OpenAI API key (consider moving this to an environment variable for production)
+const OPENAI_API_KEY = "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";
+
 // Function to generate a color palette using AI
 export async function generateAIColorPalette(prompt: string): Promise<ColorPalette | null> {
   try {
@@ -12,7 +15,7 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY || ''}` 
+        'Authorization': `Bearer ${OPENAI_API_KEY}` 
       },
       body: JSON.stringify({
         model: "gpt-4o",
@@ -32,7 +35,9 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
     });
 
     if (!response.ok) {
-      throw new Error('Failed to generate AI color palette');
+      const errorData = await response.json();
+      console.error('API error:', errorData);
+      throw new Error(`Failed to generate AI color palette: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -67,6 +72,11 @@ export async function generateAIColorPalette(prompt: string): Promise<ColorPalet
     return paletteObject as ColorPalette;
   } catch (error) {
     console.error('AI palette generation error:', error);
+    toast({
+      title: "AI Error",
+      description: `Failed to generate palette: ${(error as Error).message}`,
+      variant: "destructive",
+    });
     return null;
   }
 }
