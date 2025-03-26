@@ -1,9 +1,8 @@
-
 import ColorPaletteGenerator from "@/components/ColorPaletteGenerator";
 import WebsitePreview from "@/components/WebsitePreview";
-import { defaultPalette } from "@/utils/colorRules";
+import { defaultPalette } from "@/utils/colors";
 import { useState } from "react";
-import type { ColorPalette } from "@/utils/colorRules";
+import type { ColorPalette } from "@/utils/colors";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 
