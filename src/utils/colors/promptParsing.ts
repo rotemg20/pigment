@@ -1,4 +1,6 @@
 
+import { hexToRgb, adjustBrightness, rgbToHex, rgbToHsl, hslToRgb } from './colorConversion';
+
 // Parse an input prompt to extract color information
 export function parseColorPrompt(prompt: string): string | null {
   // Enhanced color detection

@@ -47,7 +47,8 @@ export default function ColorPaletteGenerator({
       let newPalette: ColorPalette;
       
       if (baseColor) {
-        newPalette = generateHarmonizedPalette(baseColor);
+        // Pass the entire prompt to the palette generator for better theme detection
+        newPalette = generateHarmonizedPalette(baseColor, prompt);
       } else {
         if (prompt.match(/(professional|corporate|business|formal)/gi)) {
           newPalette = {
@@ -77,6 +78,26 @@ export default function ColorPaletteGenerator({
             primary: "#4F46E5",
             text: "#44403C",
             accent: "#10B981",
+            transparent: "#00000000"
+          };
+        } else if (prompt.match(/(monochromatic|monochrome|black and white|grayscale|b&w)/gi)) {
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F3F4F6",
+            secondary: "#1F2937",
+            primary: "#374151",
+            text: "#111827",
+            accent: "#4B5563",
+            transparent: "#00000000"
+          };
+        } else if (prompt.match(/(pastel|soft|gentle|light)/gi)) {
+          newPalette = {
+            background: "#FFFFFF",
+            secondaryBg: "#F9FAFB",
+            secondary: "#4B5563",
+            primary: "#93C5FD",
+            text: "#4B5563",
+            accent: "#FCA5A5",
             transparent: "#00000000"
           };
         } else {
