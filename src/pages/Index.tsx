@@ -1,3 +1,4 @@
+
 import ColorPaletteGenerator from "@/components/ColorPaletteGenerator";
 import WebsitePreview from "@/components/WebsitePreview";
 import { defaultPalette } from "@/utils/colors";

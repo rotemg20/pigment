@@ -22,12 +22,14 @@ interface ColorPaletteGeneratorProps {
 }
 
 export default function ColorPaletteGenerator({ 
-  currentPalette, 
+  currentPalette = defaultPalette,
   onChange 
 }: ColorPaletteGeneratorProps) {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
+  
+  const palette = currentPalette || defaultPalette;
   
   const generatePalette = async () => {
     if (!prompt.trim()) {
@@ -48,16 +50,13 @@ export default function ColorPaletteGenerator({
       let toastMessage = "";
       
       if (baseColor) {
-        // Set what prompt was used to generate this palette
         setUsedPrompt(prompt);
         
-        // Check if there's a hex code in the prompt
         const hexMatch = prompt.match(/#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g);
         if (hexMatch) {
           toastMessage = "Generated palette based on hex color: " + hexMatch[0];
         }
         
-        // Check if a theme was detected
         const themeWords = [
           'forest', 'ocean', 'sunset', 'girly', 'monochrome', 'earthy', 
           'autumn', 'winter', 'spring', 'summer', 'neon', 'pastel', 
@@ -72,10 +71,9 @@ export default function ColorPaletteGenerator({
           toastMessage = `Generated "${detectedTheme}" themed palette`;
         }
         
-        // Pass the entire prompt to the palette generator for better theme detection
         newPalette = generateHarmonizedPalette(baseColor, prompt);
       } else {
-        // ... keep existing code (fallback palette generation)
+        newPalette = palette;
       }
       
       onChange(newPalette);
@@ -98,13 +96,14 @@ export default function ColorPaletteGenerator({
         description: "Failed to generate palette",
         variant: "destructive",
       });
+      console.error("Palette generation error:", error);
     } finally {
       setIsGenerating(false);
     }
   };
 
   const handleColorChange = (key: keyof ColorPalette, value: string) => {
-    const updated = { ...currentPalette, [key]: value };
+    const updated = { ...palette, [key]: value };
     onChange(updated);
   };
 
@@ -157,7 +156,7 @@ export default function ColorPaletteGenerator({
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
-          {Object.entries(currentPalette).map(([name, color]) => (
+          {Object.entries(palette).map(([name, color]) => (
             <div key={name} className="space-y-2">
               <div 
                 className="h-20 rounded-lg border"
@@ -181,14 +180,14 @@ export default function ColorPaletteGenerator({
                 {name !== 'transparent' && name !== 'background' && name !== 'secondaryBg' && (
                   <div className="mt-1 text-xs">
                     <p className="text-muted-foreground mb-1">Contrast with background:</p>
-                    {getContrastStatus(color, currentPalette.background)}
+                    {getContrastStatus(color, palette.background)}
                   </div>
                 )}
                 
                 {(name === 'text' || name === 'primary' || name === 'accent') && (
                   <div className="mt-1 text-xs">
                     <p className="text-muted-foreground mb-1">Contrast with secondary bg:</p>
-                    {getContrastStatus(color, currentPalette.secondaryBg)}
+                    {getContrastStatus(color, palette.secondaryBg)}
                   </div>
                 )}
               </div>
@@ -196,7 +195,7 @@ export default function ColorPaletteGenerator({
           ))}
         </div>
         
-        {!validatePalette(currentPalette) && (
+        {!validatePalette(palette) && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mt-4 flex items-start gap-2">
             <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
             <div>
