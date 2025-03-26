@@ -6,7 +6,7 @@ import { validatePalette } from './colorValidation';
 import { parseColorPrompt } from './promptParsing';
 
 // Your OpenAI API key (consider moving this to an environment variable for production)
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 
 // Flag to track if we've hit the API quota limit
 let apiQuotaExceeded = false;
