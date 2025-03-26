@@ -1,6 +1,7 @@
 import { ColorPalette } from './types';
 import { hexToRgb, rgbToHsl, hslToRgb, rgbToHex, adjustBrightness } from './colorConversion';
 import { checkContrast } from './colorValidation';
+import { getAdditionalColors } from './promptParsing';
 
 // Generate complementary color
 export function getComplementaryColor(hex: string): string {
@@ -136,7 +137,7 @@ function createAccentColor(baseColor: string, prompt: string = ''): string {
   const rgb = hexToRgb(baseColor);
   if (!rgb) return "#467FF7"; // Default to our accent color
   
-  // Detect themes and harmomy patterns from prompt
+  // Detect themes and harmony patterns from prompt
   const isMonochromatic = prompt.match(/(monochromatic|monochrome|same color|similar|shades)/gi);
   const isAnalogous = prompt.match(/(analogous|similar|adjacent|harmonious)/gi);
   const isTriadic = prompt.match(/(triadic|three|triplet|triangle)/gi);
@@ -170,6 +171,13 @@ function createAccentColor(baseColor: string, prompt: string = ''): string {
     return rgbToHex(newRgb.r, newRgb.g, newRgb.b);
   }
   
+  // Check for any additional colors mentioned in the prompt
+  const additionalColors = getAdditionalColors(prompt);
+  if (additionalColors.length > 1) {
+    // If multiple colors are mentioned, use the second one as accent
+    return additionalColors[1];
+  }
+  
   // Apply specific color harmony strategies based on detected patterns
   if (isMonochromatic) {
     return createMonochromaticAccent(baseColor);
@@ -183,26 +191,20 @@ function createAccentColor(baseColor: string, prompt: string = ''): string {
     return createComplementaryAccent(baseColor);
   }
   
-  // If no specific pattern is detected, choose a strategy based on the color's properties
-  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  // Randomly select a harmony pattern if none is explicitly mentioned
+  const randomHarmonyMethods = [
+    createMonochromaticAccent,
+    createAnalogousAccent,
+    createTriadicAccent,
+    createTetradicAccent,
+    createComplementaryAccent
+  ];
   
-  // For low saturation colors, use complementary to add visual interest
-  if (hsl.s < 30) {
-    return createComplementaryAccent(baseColor);
-  }
+  // Get a random harmony method
+  const randomHarmonyIndex = Math.floor(Math.random() * randomHarmonyMethods.length);
+  const randomHarmonyMethod = randomHarmonyMethods[randomHarmonyIndex];
   
-  // For dark colors, use analogous to maintain harmony
-  if (hsl.l < 30) {
-    return createAnalogousAccent(baseColor);
-  }
-  
-  // For very saturated colors, use triadic for balance
-  if (hsl.s > 80) {
-    return createTriadicAccent(baseColor);
-  }
-  
-  // For other cases, use either analogous or complementary based on lightness
-  return hsl.l > 50 ? createAnalogousAccent(baseColor) : createComplementaryAccent(baseColor);
+  return randomHarmonyMethod(baseColor);
 }
 
 // Ensure all colors in the palette meet contrast requirements
@@ -257,8 +259,14 @@ export function generateHarmonizedPalette(baseColor: string, prompt: string = ''
   // Text color - neutral dark shade with better contrast
   const text = createNeutralDarkColor(baseRgb);
   
-  // Accent color - using our enhanced accent generation strategy
-  const accent = createAccentColor(baseColor, prompt);
+  // Get multiple colors from the prompt if available
+  const additionalColors = getAdditionalColors(prompt);
+  
+  // Use a secondary mentioned color for accent if available,
+  // otherwise generate an accent using color harmony
+  const accent = additionalColors.length > 1 
+    ? additionalColors[1] 
+    : createAccentColor(baseColor, prompt);
   
   const transparent = "#00000000";
   
@@ -278,4 +286,3 @@ export function generateHarmonizedPalette(baseColor: string, prompt: string = ''
   
   return palette;
 }
-

@@ -54,6 +54,9 @@ export function parseColorPrompt(prompt: string): string | null {
     return accentColorMap[accentColorName] || "#467FF7";
   }
   
+  // If multiple colors are mentioned, return the first one for primary
+  // We'll handle the multiple colors in the palette generation function
+  
   // Expanded color mapping
   const colorMap: Record<string, string> = {
     // Blues
@@ -114,6 +117,16 @@ export function parseColorPrompt(prompt: string): string | null {
     silver: "#CBD5E0"
   };
   
+  // Get all distinct color names from the prompt (excluding modifiers)
+  const distinctColorNames = colorMentions.filter(color => 
+    !['dark', 'light', 'bright', 'pastel', 'vibrant', 'muted', 'cool', 'warm'].includes(color.toLowerCase())
+  );
+  
+  // Store all distinct colors for palette generation
+  export const allMentionedColors = distinctColorNames.map(name => 
+    colorMap[name.toLowerCase()] || "#2B6CB0"
+  );
+  
   // Analyze modifiers
   const isDark = prompt.match(/(dark|deep|rich|midnight|charcoal)/gi);
   const isLight = prompt.match(/(light|pale|soft|pastel)/gi);
@@ -129,7 +142,7 @@ export function parseColorPrompt(prompt: string): string | null {
   const isEnergetic = prompt.match(/(energetic|dynamic|active|lively)/gi);
   
   // Get the primary color mention
-  let baseColor = colorMentions[0].toLowerCase();
+  let baseColor = distinctColorNames[0]?.toLowerCase() || "blue";
   let hexColor = colorMap[baseColor] || "#2B6CB0"; // Default to blue
   
   // Apply modifiers
@@ -182,4 +195,18 @@ export function parseColorPrompt(prompt: string): string | null {
   }
   
   return hexColor;
+}
+
+// Export additional color information from the prompt
+export const allMentionedColors: string[] = [];
+
+// Get all unique colors mentioned in the prompt
+export function getAdditionalColors(prompt: string): string[] {
+  // Reset the global array first
+  allMentionedColors.length = 0;
+  
+  // Call parseColorPrompt to populate allMentionedColors
+  parseColorPrompt(prompt);
+  
+  return allMentionedColors;
 }
