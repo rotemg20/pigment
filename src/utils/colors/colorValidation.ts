@@ -1,3 +1,4 @@
+
 import { ColorPalette } from './types';
 import { hexToRgb } from './colorConversion';
 
@@ -131,9 +132,22 @@ export function fixPaletteAccessibility(palette: ColorPalette): ColorPalette {
   fixedPalette.accent = adjustColorForContrast(palette.accent, palette.background);
   
   // Fix secondary color contrast with white text (for the dark section)
-  if (!checkContrast(palette.secondary, "#FFFFFF")) {
-    // Make secondary color darker if needed to contrast with white
-    fixedPalette.secondary = adjustColorForContrast("#FFFFFF", palette.secondary);
+  // Always ensure secondary is a dark color with good contrast with white text
+  // First make sure it's dark enough - target a very low luminance
+  let secondaryLuminance = calculateLuminance(palette.secondary);
+  
+  // If not dark enough, start with a known dark color
+  if (secondaryLuminance > 0.2) {
+    fixedPalette.secondary = "#1A202C"; // Start with a dark slate color
+  } else {
+    fixedPalette.secondary = palette.secondary; // Keep it if already dark
+  }
+  
+  // Ensure it has enough contrast with white text
+  if (!checkContrast(fixedPalette.secondary, "#FFFFFF")) {
+    // Use white text as foreground, secondary as background
+    // This will darken the secondary color if needed
+    fixedPalette.secondary = adjustColorForContrast("#FFFFFF", fixedPalette.secondary, 5.0); // Higher contrast ratio for better accessibility
   }
   
   return fixedPalette;
