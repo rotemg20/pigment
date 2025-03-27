@@ -51,12 +51,15 @@ export function validatePalette(palette: ColorPalette): boolean {
   // Check accent contrasts against backgrounds
   const accentOnMainBg = checkContrast(palette.background, palette.accent);
   
+  // Check secondary color contrast with white text
+  const whiteOnSecondary = checkContrast(palette.secondary, "#FFFFFF");
+  
   return textOnMainBg && textOnSecondaryBg && 
          primaryOnMainBg && primaryOnSecondaryBg && 
-         accentOnMainBg;
+         accentOnMainBg && whiteOnSecondary;
 }
 
-// NEW FUNCTION: Adjust a color to meet contrast requirements with a background
+// Adjust a color to meet contrast requirements with a background
 export function adjustColorForContrast(color: string, backgroundColor: string, minContrastRatio: number = 4.5): string {
   const colorRgb = hexToRgb(color);
   const bgRgb = hexToRgb(backgroundColor);
@@ -76,10 +79,10 @@ export function adjustColorForContrast(color: string, backgroundColor: string, m
   let adjustedColor = color;
   let currentRatio = initialRatio;
   let attempts = 0;
-  const maxAttempts = 20; // Prevent infinite loops
+  const maxAttempts = 30; // Increased from 20 to ensure we reach target contrast
   
   // Step size for RGB adjustments
-  const step = shouldDarken ? -5 : 5;
+  const step = shouldDarken ? -8 : 8; // Increased from 5 to make adjustments more effective
   
   // Clone the RGB values
   let r = colorRgb.r;
@@ -104,7 +107,7 @@ export function adjustColorForContrast(color: string, backgroundColor: string, m
   return adjustedColor;
 }
 
-// NEW FUNCTION: Fix all color accessibility issues in a palette
+// Fix all color accessibility issues in a palette
 export function fixPaletteAccessibility(palette: ColorPalette): ColorPalette {
   const fixedPalette = { ...palette };
   
@@ -114,23 +117,24 @@ export function fixPaletteAccessibility(palette: ColorPalette): ColorPalette {
   // Fix text contrast against both backgrounds
   fixedPalette.text = adjustColorForContrast(palette.text, palette.background);
   if (!checkContrast(fixedPalette.text, palette.secondaryBg)) {
-    // If text needs adjustment for secondary background too, find a color that works for both
-    const textForSecondaryBg = adjustColorForContrast(fixedPalette.text, palette.secondaryBg);
-    // Choose the darkest option to ensure contrast with both backgrounds
-    fixedPalette.text = calculateLuminance(fixedPalette.text) < calculateLuminance(textForSecondaryBg) 
-      ? fixedPalette.text : textForSecondaryBg;
+    // If text needs adjustment for secondary background too, make it darker to ensure contrast with both
+    fixedPalette.text = adjustColorForContrast(fixedPalette.text, palette.secondaryBg);
   }
   
-  // Fix primary color contrast
+  // Fix primary color contrast against both backgrounds
   fixedPalette.primary = adjustColorForContrast(palette.primary, palette.background);
   if (!checkContrast(fixedPalette.primary, palette.secondaryBg)) {
-    const primaryForSecondaryBg = adjustColorForContrast(fixedPalette.primary, palette.secondaryBg);
-    fixedPalette.primary = calculateLuminance(fixedPalette.primary) < calculateLuminance(primaryForSecondaryBg) 
-      ? fixedPalette.primary : primaryForSecondaryBg;
+    fixedPalette.primary = adjustColorForContrast(fixedPalette.primary, palette.secondaryBg);
   }
   
-  // Fix accent color contrast
+  // Fix accent color contrast against background
   fixedPalette.accent = adjustColorForContrast(palette.accent, palette.background);
+  
+  // Fix secondary color contrast with white text (for the dark section)
+  if (!checkContrast(palette.secondary, "#FFFFFF")) {
+    // Make secondary color darker if needed to contrast with white
+    fixedPalette.secondary = adjustColorForContrast("#FFFFFF", palette.secondary);
+  }
   
   return fixedPalette;
 }
