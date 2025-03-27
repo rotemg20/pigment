@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { 
   ColorPalette, 
   defaultPalette,
@@ -32,10 +32,10 @@ export default function ColorPaletteGenerator({
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
-  const [useAI, setUseAI] = useState(true);  // Set AI mode to true by default
-  const [aiAvailable, setAiAvailable] = useState(true); // Track if AI mode is available
-  const [autoFixAccessibility, setAutoFixAccessibility] = useState(false); // New state for auto-fix option
-  
+  const [useAI, setUseAI] = useState(true);
+  const [aiAvailable, setAiAvailable] = useState(true);
+  const [autoFixAccessibility, setAutoFixAccessibility] = useState(false);
+
   const palette = currentPalette || defaultPalette;
   
   const generatePalette = async () => {
@@ -57,7 +57,6 @@ export default function ColorPaletteGenerator({
       let usedAI = false;
       
       if (useAI && aiAvailable) {
-        // Try to generate using AI
         const aiPalette = await generateAIColorPalette(prompt);
         
         if (aiPalette) {
@@ -65,8 +64,7 @@ export default function ColorPaletteGenerator({
           toastMessage = "Generated AI palette based on your prompt";
           usedAI = true;
         } else {
-          // If AI generation fails, fall back to our algorithm
-          setAiAvailable(false); // Disable AI for future attempts in this session
+          setAiAvailable(false);
           newPalette = simulateAIColorPalette(prompt, palette);
           toastMessage = "AI generation unavailable, using built-in algorithm instead";
           
@@ -77,17 +75,14 @@ export default function ColorPaletteGenerator({
           });
         }
       } else {
-        // Use our existing algorithm
         const baseColor = parseColorPrompt(prompt);
         
         if (baseColor) {
-          // Check for specific palette types
           const hexMatch = prompt.match(/#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g);
           if (hexMatch) {
             toastMessage = "Generated palette based on hex color: " + hexMatch[0];
           }
           
-          // List of themes to check for in the prompt
           const themeWords = [
             'forest', 'ocean', 'sunset', 'girly', 'monochrome', 'earthy', 
             'autumn', 'winter', 'spring', 'summer', 'neon', 'pastel', 
@@ -104,34 +99,30 @@ export default function ColorPaletteGenerator({
           if (detectedTheme) {
             toastMessage = `Generated "${detectedTheme}" themed palette`;
           } else {
-            // If no specific theme was detected in the keywords
-            // but we still got a baseColor, create a generic message
-            toastMessage = "Generated custom palette";
+            newPalette = generateHarmonizedPalette(baseColor, prompt);
           }
-          
-          newPalette = generateHarmonizedPalette(baseColor, prompt);
         } else {
-          // If no colors or themes detected, use fallback palette
-          // but still try to generate something from the prompt
           toastMessage = "Using default palette with custom adjustments";
           newPalette = generateHarmonizedPalette(palette.primary, prompt);
         }
       }
       
-      // Apply accessibility fixes if auto-fix is enabled
       if (autoFixAccessibility && !validatePalette(newPalette)) {
         const originalPalette = { ...newPalette };
         newPalette = fixPaletteAccessibility(newPalette);
         
-        // Add info about fixing to the toast message
         toastMessage += " with accessibility adjustments";
         
-        // If we had to fix accessibility issues, show an additional toast
         if (JSON.stringify(originalPalette) !== JSON.stringify(newPalette)) {
+          onChange(newPalette);
           toast({
             title: "Accessibility Fixes Applied",
             description: "Colors were adjusted to meet WCAG AA contrast standards",
-            variant: "default",
+          });
+        } else {
+          toast({
+            title: "No Changes Needed",
+            description: "Your palette already meets accessibility standards",
           });
         }
       }
@@ -167,11 +158,9 @@ export default function ColorPaletteGenerator({
     onChange(updated);
   };
 
-  // New function to fix accessibility of the current palette
   const handleFixAccessibility = () => {
     const fixedPalette = fixPaletteAccessibility(palette);
     
-    // Check if any colors were actually changed
     if (JSON.stringify(fixedPalette) !== JSON.stringify(palette)) {
       onChange(fixedPalette);
       toast({
@@ -251,7 +240,8 @@ export default function ColorPaletteGenerator({
           )}
         </div>
         
-        {/* New accessibility options */}
+        <Separator className="my-4" />
+        
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Button 
