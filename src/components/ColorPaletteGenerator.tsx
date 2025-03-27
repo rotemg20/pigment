@@ -11,11 +11,12 @@ import {
   checkContrast,
   parseColorPrompt,
   generateHarmonizedPalette,
-  getContrastRatio
+  getContrastRatio,
+  fixPaletteAccessibility
 } from '@/utils/colors';
 import { generateAIColorPalette, simulateAIColorPalette } from '@/utils/colors/aiColorGeneration';
 import { toast } from "@/hooks/use-toast";
-import { Wand2, AlertTriangle, Check, X, Info, Sparkles } from 'lucide-react';
+import { Wand2, AlertTriangle, Check, X, Info, Sparkles, AccessibilityIcon } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
@@ -33,6 +34,7 @@ export default function ColorPaletteGenerator({
   const [usedPrompt, setUsedPrompt] = useState<string | null>(null);
   const [useAI, setUseAI] = useState(true);  // Set AI mode to true by default
   const [aiAvailable, setAiAvailable] = useState(true); // Track if AI mode is available
+  const [autoFixAccessibility, setAutoFixAccessibility] = useState(false); // New state for auto-fix option
   
   const palette = currentPalette || defaultPalette;
   
@@ -116,6 +118,24 @@ export default function ColorPaletteGenerator({
         }
       }
       
+      // Apply accessibility fixes if auto-fix is enabled
+      if (autoFixAccessibility && !validatePalette(newPalette)) {
+        const originalPalette = { ...newPalette };
+        newPalette = fixPaletteAccessibility(newPalette);
+        
+        // Add info about fixing to the toast message
+        toastMessage += " with accessibility adjustments";
+        
+        // If we had to fix accessibility issues, show an additional toast
+        if (JSON.stringify(originalPalette) !== JSON.stringify(newPalette)) {
+          toast({
+            title: "Accessibility Fixes Applied",
+            description: "Colors were adjusted to meet WCAG AA contrast standards",
+            variant: "default",
+          });
+        }
+      }
+      
       onChange(newPalette);
       
       if (validatePalette(newPalette)) {
@@ -145,6 +165,25 @@ export default function ColorPaletteGenerator({
   const handleColorChange = (key: keyof ColorPalette, value: string) => {
     const updated = { ...palette, [key]: value };
     onChange(updated);
+  };
+
+  // New function to fix accessibility of the current palette
+  const handleFixAccessibility = () => {
+    const fixedPalette = fixPaletteAccessibility(palette);
+    
+    // Check if any colors were actually changed
+    if (JSON.stringify(fixedPalette) !== JSON.stringify(palette)) {
+      onChange(fixedPalette);
+      toast({
+        title: "Accessibility Fixes Applied",
+        description: "Colors were adjusted to meet WCAG AA contrast standards",
+      });
+    } else {
+      toast({
+        title: "No Changes Needed",
+        description: "Your palette already meets accessibility standards",
+      });
+    }
   };
 
   const getContrastStatus = (color: string, background: string) => {
@@ -212,6 +251,32 @@ export default function ColorPaletteGenerator({
           )}
         </div>
         
+        {/* New accessibility options */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleFixAccessibility}
+              className="flex items-center gap-1"
+            >
+              <AccessibilityIcon className="h-4 w-4 mr-1" />
+              Fix Accessibility
+            </Button>
+            
+            <span className="text-xs text-muted-foreground">or</span>
+            
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="auto-fix" 
+                checked={autoFixAccessibility} 
+                onCheckedChange={setAutoFixAccessibility}
+              />
+              <Label htmlFor="auto-fix" className="text-sm">Auto-fix when generating</Label>
+            </div>
+          </div>
+        </div>
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
           {Object.entries(palette).map(([name, color]) => (
             <div key={name} className="space-y-2">
@@ -260,6 +325,9 @@ export default function ColorPaletteGenerator({
               <p className="text-sm text-yellow-700">
                 Some colors in this palette don't meet WCAG AA contrast requirements. 
                 This may affect readability and accessibility.
+              </p>
+              <p className="text-sm text-yellow-700 mt-1">
+                Click "Fix Accessibility" to automatically adjust colors to meet standards.
               </p>
             </div>
           </div>
