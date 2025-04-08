@@ -16,3 +16,6 @@ export * from './promptParsing';
 
 // Export AI color generation functions
 export * from './aiColorGeneration';
+
+// Export color harmony rules
+export * from './colorHarmonyRules';

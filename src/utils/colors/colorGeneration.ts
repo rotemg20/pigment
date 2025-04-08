@@ -2,6 +2,12 @@ import { ColorPalette } from './types';
 import { hexToRgb, rgbToHsl, hslToRgb, rgbToHex, adjustBrightness } from './colorConversion';
 import { checkContrast } from './colorValidation';
 import { getAdditionalColors } from './promptParsing';
+import { 
+  detectHarmonyPattern, 
+  createHarmonyColor, 
+  applyColorRelationshipRules,
+  HarmonyPattern 
+} from './colorHarmonyRules';
 
 // Generate complementary color
 export function getComplementaryColor(hex: string): string {
@@ -138,11 +144,7 @@ function createAccentColor(baseColor: string, prompt: string = ''): string {
   if (!rgb) return "#467FF7"; // Default to our accent color
   
   // Detect themes and harmony patterns from prompt
-  const isMonochromatic = prompt.match(/(monochromatic|monochrome|same color|similar|shades)/gi);
-  const isAnalogous = prompt.match(/(analogous|similar|adjacent|harmonious)/gi);
-  const isTriadic = prompt.match(/(triadic|three|triplet|triangle)/gi);
-  const isTetradic = prompt.match(/(tetradic|square|rectangle|four)/gi);
-  const isComplementary = prompt.match(/(complementary|opposite|contrast|opposing)/gi);
+  const harmonyPattern = detectHarmonyPattern(prompt);
   
   // Detect specific theme requests
   const isMinimalist = prompt.match(/(minimalist|simple|clean)/gi);
@@ -178,33 +180,8 @@ function createAccentColor(baseColor: string, prompt: string = ''): string {
     return additionalColors[1];
   }
   
-  // Apply specific color harmony strategies based on detected patterns
-  if (isMonochromatic) {
-    return createMonochromaticAccent(baseColor);
-  } else if (isAnalogous) {
-    return createAnalogousAccent(baseColor);
-  } else if (isTriadic) {
-    return createTriadicAccent(baseColor);
-  } else if (isTetradic) {
-    return createTetradicAccent(baseColor);
-  } else if (isComplementary) {
-    return createComplementaryAccent(baseColor);
-  }
-  
-  // Randomly select a harmony pattern if none is explicitly mentioned
-  const randomHarmonyMethods = [
-    createMonochromaticAccent,
-    createAnalogousAccent,
-    createTriadicAccent,
-    createTetradicAccent,
-    createComplementaryAccent
-  ];
-  
-  // Get a random harmony method
-  const randomHarmonyIndex = Math.floor(Math.random() * randomHarmonyMethods.length);
-  const randomHarmonyMethod = randomHarmonyMethods[randomHarmonyIndex];
-  
-  return randomHarmonyMethod(baseColor);
+  // Create a harmony color based on the detected pattern
+  return createHarmonyColor(baseColor, harmonyPattern);
 }
 
 // Ensure all colors in the palette meet contrast requirements
@@ -244,42 +221,20 @@ function ensureContrastRequirements(palette: ColorPalette): ColorPalette {
 export function generateHarmonizedPalette(baseColor: string, prompt: string = ''): ColorPalette {
   const baseRgb = hexToRgb(baseColor) || { r: 44, g: 82, b: 130 }; // Default to navy blue
   
-  // Create variations based on the base color
-  const primary = baseColor;
-  
-  // Always use white for the main background
-  const background = "#FFFFFF";
-  
-  // Create a light version for secondary background (more contrast with text)
-  const secondaryBg = createLightColor(baseRgb, 0.92);
-  
-  // Create a dark version for secondary (dark containers)
-  const secondary = createDarkColor(baseRgb, 0.15);
-  
-  // Text color - neutral dark shade with better contrast
-  const text = createNeutralDarkColor(baseRgb);
+  // First try to use our structured color relationship rules
+  const relationshipPalette = applyColorRelationshipRules(baseColor, prompt);
   
   // Get multiple colors from the prompt if available
   const additionalColors = getAdditionalColors(prompt);
   
+  // Customize the palette based on additional colors or prompt instructions
+  let palette = { ...relationshipPalette };
+  
   // Use a secondary mentioned color for accent if available,
-  // otherwise generate an accent using color harmony
-  const accent = additionalColors.length > 1 
-    ? additionalColors[1] 
-    : createAccentColor(baseColor, prompt);
-  
-  const transparent = "#00000000";
-  
-  // Create initial palette
-  let palette = {
-    background,
-    secondaryBg,
-    secondary,
-    primary,
-    text, 
-    accent,
-    transparent
-  };
+  // otherwise use the one from relationship rules
+  if (additionalColors.length > 1) {
+    palette.accent = additionalColors[1];
+  }
   
   // Ensure good contrast for all combinations
   palette = ensureContrastRequirements(palette);
